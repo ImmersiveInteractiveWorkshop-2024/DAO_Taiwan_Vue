@@ -127,8 +127,8 @@ export default {
   mounted () {
     this.canvas = document.getElementById('canvas')
     this.ctx = this.canvas.getContext('2d')
-    this.canvas.height = window.innerWidth * 0.9
-    this.canvas.width = window.innerWidth * 0.9
+    this.canvas.height = 576
+    this.canvas.width = 576
     this.ctx.strokeStyle = this.colors[0]
     // 在组件加载时从localStorage中读取selectedProduct
     const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct'))
@@ -161,6 +161,7 @@ body {
   max-width: 576px;
   margin:0 auto;
   background-color: #fff;
+  outline: 1px solid #CF2C2F;
 }
 
 h2 {
@@ -180,6 +181,9 @@ canvas {
   cursor: crosshair;
   z-index: 1;
 
+}
+nav{
+  max-width:576px;
 }
 .button-circle{
   display: flex;
