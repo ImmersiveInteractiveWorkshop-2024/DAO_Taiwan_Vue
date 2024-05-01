@@ -10,7 +10,7 @@
       <img class="logo_sm" src="/src/assets/images/logo_small.png" alt="logo_sm">
       <a class="done-button" href="#">完成</a>
     </nav>
-    <div id="app" class="position-relative">
+    <div id="app" class="position-relative" ref="appContainer">
       <h2>{{ message }}</h2>
       <div class="canvas-container">
     <canvas
@@ -18,6 +18,8 @@
       @mouseup="finishedPainting"
       @mousemove="draw"
       id="canvas"
+      :width="canvasWidth"
+      :height="canvasWidth"
     ></canvas>
     <img
       src="/src/assets/images/conbon_c.png"
@@ -57,10 +59,20 @@ export default {
       ctx: null,
       colors: ['#C73232', '#E6A34B', '#EBC352', '#FDF673', '#D4DAAC', '#9BEC58', '#4234E9', '#A0BEBA', '#DDE9F1', '#D59CF9'],
       currentColor: '#C73232',
-      backgroundColor: '#FFFFFF'
+      backgroundColor: '#FFFFFF',
+      appWidth: 0
+    }
+  },
+  computed: {
+    canvasWidth () {
+      // 计算canvas的宽度和高度，使其与#app的宽度相同
+      return this.appWidth
     }
   },
   methods: {
+    updateAppWidth () {
+      this.appWidth = this.$refs.appContainer.offsetWidth
+    },
     changeColor (color) {
       this.ctx.strokeStyle = color
       this.currentColor = color
@@ -127,14 +139,22 @@ export default {
   mounted () {
     this.canvas = document.getElementById('canvas')
     this.ctx = this.canvas.getContext('2d')
-    this.canvas.height = 576
+    this.updateAppWidth() // 初始化更新 app 寬度
+    window.addEventListener('resize', this.updateAppWidth) // 監聽窗口大小變化
+    this.canvas.height = window.innerWidth * 0.9
     this.canvas.width = 576
     this.ctx.strokeStyle = this.colors[0]
-    // 在组件加载时从localStorage中读取selectedProduct
     const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct'))
     if (selectedProduct) {
       this.selectedProduct = selectedProduct
     }
+  },
+  beforeUnmount () {
+    window.removeEventListener('resize', this.updateAppWidth) // 移除窗口大小變化監聽器
+  },
+  updated () {
+    // 組件更新後重新計算#app的寬度
+    this.updateAppWidth()
   }
 }
 </script>
@@ -170,6 +190,7 @@ h2 {
 }
 
 canvas {
+  width:100%;
   position: absolute;
   top: 50%;
   left: 50%;
