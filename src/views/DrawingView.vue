@@ -158,7 +158,7 @@ body {
 }
 
 #app {
-  max-width: 1200px;
+  max-width: 576px;
   margin:0 auto;
   background-color: #fff;
 }
