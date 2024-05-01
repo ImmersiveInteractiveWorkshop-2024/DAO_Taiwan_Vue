@@ -17,6 +17,9 @@
       @mousedown="startPainting"
       @mouseup="finishedPainting"
       @mousemove="draw"
+      @touchstart="startTouching"
+      @touchmove="dragging"
+      @touchend="finishDragging"
       id="canvas"
       :width="canvasWidth"
       :height="canvasWidth"
@@ -60,7 +63,9 @@ export default {
       colors: ['#C73232', '#E6A34B', '#EBC352', '#FDF673', '#D4DAAC', '#9BEC58', '#4234E9', '#A0BEBA', '#DDE9F1', '#D59CF9'],
       currentColor: '#C73232',
       backgroundColor: '#FFFFFF',
-      appWidth: 0
+      appWidth: 0,
+      lastX: 0,
+      lastY: 0
     }
   },
   computed: {
@@ -90,7 +95,22 @@ export default {
     },
     startPainting (e) {
       this.painting = true
-      this.draw(e)
+      if (e.touches && e.touches.length > 0) {
+        this.startTouching(e.touches[0])
+      } else {
+        this.draw(e)
+      }
+    },
+    draw (e) {
+      if (!this.painting) return
+      const x = e.offsetX || e.touches[0].clientX - this.$refs.canvas.offsetLeft
+      const y = e.offsetY || e.touches[0].clientY - this.$refs.canvas.offsetTop
+      this.ctx.lineWidth = 10
+      this.ctx.lineCap = 'round'
+      this.ctx.lineTo(x, y)
+      this.ctx.stroke()
+      this.ctx.beginPath()
+      this.ctx.moveTo(x, y)
     },
     paintingSelect () {
       this.ctx.strokeStyle = this.currentColor
@@ -99,14 +119,34 @@ export default {
       this.painting = false
       this.ctx.beginPath()
     },
-    draw (e) {
-      if (!this.painting) return
+    startTouching (e) {
+      e.preventDefault()
+      this.painting = true
       this.ctx.lineWidth = 10
       this.ctx.lineCap = 'round'
-      this.ctx.lineTo(e.offsetX, e.offsetY)
+      const rect = this.canvas.getBoundingClientRect()
+      const setX = e.touches[0].clientX - rect.left// 取得X座標
+      const setY = e.touches[0].clientY - rect.top// 取得Y座標
+      this.lastX = setX
+      this.lastY = setY
+    },
+    dragging (e) {
+      e.preventDefault()
+      const rect = this.canvas.getBoundingClientRect()
+      const setX = e.touches[0].clientX - rect.left// 取得X座標
+      const setY = e.touches[0].clientY - rect.top// 取得Y座標
+      if (!this.painting) return
+      this.ctx.lineWidth = 10
+      this.ctx.beginPath()// 路徑開始
+      this.ctx.moveTo(this.lastX, this.lastY) // 路徑結束
+      this.ctx.lineTo(setX, setY)
       this.ctx.stroke()
+      this.lastX = setX
+      this.lastY = setY
+    },
+    finishDragging () {
+      this.painting = false
       this.ctx.beginPath()
-      this.ctx.moveTo(e.offsetX, e.offsetY)
     },
     eraser (state) {
       if (state) {
@@ -143,11 +183,13 @@ export default {
     window.addEventListener('resize', this.updateAppWidth) // 監聽窗口大小變化
     this.canvas.height = window.innerWidth * 0.9
     this.canvas.width = 576
-    this.ctx.strokeStyle = this.colors[0]
     const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct'))
     if (selectedProduct) {
       this.selectedProduct = selectedProduct
     }
+    this.$nextTick(() => {
+      this.ctx.strokeStyle = this.colors[0]
+    })
   },
   beforeUnmount () {
     window.removeEventListener('resize', this.updateAppWidth) // 移除窗口大小變化監聽器
