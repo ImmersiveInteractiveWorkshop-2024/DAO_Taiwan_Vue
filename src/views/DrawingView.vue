@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h1>繪製貼圖</h1>
-    <div v-if="selectedProduct">
+    <h1 class="d-none">繪製貼圖</h1>
+    <div class="d-none" v-if="selectedProduct">
       <h2>選中的物件: {{ selectedProduct.name }}</h2>
       <p>物件描述: {{ selectedProduct.description }}</p>
     </div>
-    <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
-      <a href="#" class="button-circle"><ion-icon name="chevron-back-outline"></ion-icon></a>
-      <img class="logo_sm" src="/src/assets/images/logo_small.png" alt="logo_sm">
-      <a class="done-button" href="#" @click.prevent="uploadImage">完成</a>
-    </nav>
     <div id="app" class="position-relative" ref="appContainer">
+      <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
+      <div class="w-25"><a href="#" class="button-circle"><ion-icon name="chevron-back-outline"></ion-icon></a></div>
+      <img class="logo_sm " src="/src/assets/images/logo_small.png" alt="logo_sm">
+      <div class="w-25 d-flex"><a class="done-button" href="#" @click.prevent="doneDrawing">完成</a></div>
+    </nav>
       <h2>{{ message }}</h2>
       <div class="canvas-container">
     <canvas
@@ -30,7 +30,7 @@
       alt="conbon_c"
     />
   </div>
-      <div class="color-picker ">
+      <div class="color-picker " v-if="showColorPicker">
         <div
           v-for="color in colors"
           :key="color"
@@ -39,12 +39,15 @@
           @click="changeColor(color)"
           :class="{ 'currentColor': color === this.currentColor }"></div></div>
       </div>
-      <div class="tool-list d-flex">
+      <div class="tool-list d-flex" v-if="showColorPicker">
         <a class="painting-button" @click.prevent="paintingSelect"><i class="fas fa-paint-brush"></i></a>
         <a class="fill-button" @click.prevent="fillCanvas"><i class="fab fa-bitbucket"></i></a>
         <a class="eraser-button" @click.prevent="eraser(true)"><i class="fas fa-eraser"></i></a>
         <a class="clear-button" @click.prevent="clearCanvas"><i class="fas fa-trash"></i></a>
         <a class="save-button" @click.prevent="saveCanvas"><i class="fas fa-save"></i></a>
+      </div>
+      <div class="d-flex justify-content-center" v-if="!showColorPicker">
+        <a class="upload-button" href="#" @click.prevent="uploadImage">確認上傳</a>
       </div>
     </div>
   </div>
@@ -52,6 +55,15 @@
 
 <script>
 import { saveAs } from 'file-saver'
+// 創建Socket.io客戶端連接
+import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js'
+const socket = io('https://daotaiwanapi.onrender.com', {
+  withCredentials: false
+})
+// 監聽後端發送的 message 訊號
+socket.on('message', function (data) {
+  console.log('伺服器傳送訊息:', data)
+})
 export default {
   data () {
     return {
@@ -65,7 +77,9 @@ export default {
       backgroundColor: '#FFFFFF',
       appWidth: 0,
       lastX: 0,
-      lastY: 0
+      lastY: 0,
+      showColorPicker: true,
+      canvasEnabled: true
     }
   },
   computed: {
@@ -77,6 +91,7 @@ export default {
   methods: {
     updateAppWidth () {
       this.appWidth = this.$refs.appContainer.offsetWidth
+      this.ctx.strokeStyle = this.currentColor
     },
     changeColor (color) {
       this.ctx.strokeStyle = color
@@ -102,7 +117,7 @@ export default {
       }
     },
     draw (e) {
-      if (!this.painting) return
+      if (!this.painting || !this.canvasEnabled) return
       const x = e.offsetX || e.touches[0].clientX - this.$refs.canvas.offsetLeft
       const y = e.offsetY || e.touches[0].clientY - this.$refs.canvas.offsetTop
       this.ctx.lineWidth = 10
@@ -135,7 +150,7 @@ export default {
       const rect = this.canvas.getBoundingClientRect()
       const setX = e.touches[0].clientX - rect.left// 取得X座標
       const setY = e.touches[0].clientY - rect.top// 取得Y座標
-      if (!this.painting) return
+      if (!this.painting || !this.canvasEnabled) return
       this.ctx.lineWidth = 10
       this.ctx.beginPath()// 路徑開始
       this.ctx.moveTo(this.lastX, this.lastY) // 路徑結束
@@ -175,18 +190,17 @@ export default {
       }, 'image/png')
     },
     uploadImage () {
-    // 创建一个新的 Canvas 元素并设置尺寸为 1024x1024
+    // 設定目標尺寸為 1024x1024
       const newCanvas = document.createElement('canvas')
       const newContext = newCanvas.getContext('2d')
       newCanvas.width = 1024
       newCanvas.height = 1024
 
-      // 绘制当前画布内容到新 Canvas 上
+      // 繪製當前畫布到新畫布上
       newContext.drawImage(this.canvas, 0, 0, 1024, 1024)
 
-      // 将新 Canvas 转换为 Blob 对象
+      // Canvas 轉為 Blob
       newCanvas.toBlob((blob) => {
-        // 创建 FormData 对象并添加新的 Blob 对象
         const formData = new FormData()
         formData.append('image', blob, 'canvas_image.png')
         formData.append('type', 'conbon_c')
@@ -199,12 +213,17 @@ export default {
           .then((data) => {
             console.log(data)
             alert(JSON.stringify(data.message))
+            this.$router.push('/result')
           })
           .catch((error) => {
             console.error('Error:', error)
             alert('Failed to upload image')
           })
       }, 'image/png')
+    },
+    doneDrawing () {
+      this.canvasEnabled = false
+      this.showColorPicker = false
     }
 
   },
@@ -252,10 +271,14 @@ body {
 }
 
 #app {
-  max-width: 576px;
+  display: flex;
+  flex-direction: column;
+  max-width: 450px;
   margin:0 auto;
   background-color: #fff;
   outline: 1px solid #CF2C2F;
+  padding:0.3rem 0;
+  height:100vw;
 }
 
 h2 {
@@ -264,7 +287,7 @@ h2 {
 }
 
 canvas {
-  width:100%;
+  width:99%;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -279,26 +302,34 @@ canvas {
 }
 nav{
   max-width:576px;
+  padding:10px 20px;
+  align-items: center;
 }
 .button-circle{
   display: flex;
   align-items: center;
-  font-size:20px;
-  padding:10px 10px;
-  color:#CF2C2F;
-  border:1px solid #CF2C2F;
-  border-radius:50%;
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  color: #CF2C2F;
+  border: 1px solid #CF2C2F;
+  border-radius: 50%;
+  margin-right: auto;
+  justify-content: center;
 }
 
 .done-button{
   color:#CF2C2F;
-  padding:8px 14px;
+  font-size: 12px;
+  padding:6px 14px;
   border:1px solid #CF2C2F;
   border-radius:30px;
+  margin-left: auto;
 }
 .logo_sm{
-  width:150px;
+  width:40%;
   height:fit-content;
+  margin: 0 auto;
 }
 .color-box {
   width: 32px;
@@ -360,16 +391,24 @@ nav{
   text-decoration: none;
   font-weight: bold;
 }
-
+.upload-button{
+  display:block;
+  margin:0 auto;
+  padding: 18px 28px;
+  font-size:18px;
+  background-color:#CF2C2F;
+  color:#fff;
+  border-radius:43px;
+}
 .tool-list a:hover {
   background-color: #6A6A6A;
   color:#fff;
 }
 .canvas-container {
   position: relative;
-  width: 100%; /* 确保Canvas和图片都占满父容器 */
+  width: 100%;
   height: 0;
-  padding-top: 100%; /* 创建一个宽高比为1:1的容器 */
+  padding-top: 100%;
 }
 
 .overlay-img {

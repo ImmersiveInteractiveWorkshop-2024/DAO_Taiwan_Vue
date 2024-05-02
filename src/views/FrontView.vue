@@ -1,6 +1,6 @@
 <template>
-    <h1>首頁</h1>
-    <nav>
+    <h1 class="d-none">首頁</h1>
+    <nav class="d-none">
         <RouterLink to="/home">歡迎光臨臺灣映像</RouterLink> |
         <RouterLink to="/start">開始</RouterLink> |
         <RouterLink to="/models">選擇模型</RouterLink> |
