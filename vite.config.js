@@ -17,7 +17,13 @@ export default defineConfig(({ mode }) => {
   return ({
     base: process.env.NODE_ENV === 'production' ? `/${process.env.REPOSITORY_NAME}/` : '/',
     plugins: [
-      vue(),
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith('ion-')
+          }
+        }
+      }),
       eslintPlugin({
         include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue']
       })

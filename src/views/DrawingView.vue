@@ -8,7 +8,7 @@
     <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
       <a href="#" class="button-circle"><ion-icon name="chevron-back-outline"></ion-icon></a>
       <img class="logo_sm" src="/src/assets/images/logo_small.png" alt="logo_sm">
-      <a class="done-button" href="#">完成</a>
+      <a class="done-button" href="#" @click.prevent="uploadImage">完成</a>
     </nav>
     <div id="app" class="position-relative" ref="appContainer">
       <h2>{{ message }}</h2>
@@ -172,6 +172,38 @@ export default {
       newCanvas.toBlob((blob) => {
         // 使用 FileSaver.js 保存文件
         saveAs(blob, 'canvas_image.png')
+      }, 'image/png')
+    },
+    uploadImage () {
+    // 创建一个新的 Canvas 元素并设置尺寸为 1024x1024
+      const newCanvas = document.createElement('canvas')
+      const newContext = newCanvas.getContext('2d')
+      newCanvas.width = 1024
+      newCanvas.height = 1024
+
+      // 绘制当前画布内容到新 Canvas 上
+      newContext.drawImage(this.canvas, 0, 0, 1024, 1024)
+
+      // 将新 Canvas 转换为 Blob 对象
+      newCanvas.toBlob((blob) => {
+        // 创建 FormData 对象并添加新的 Blob 对象
+        const formData = new FormData()
+        formData.append('image', blob, 'canvas_image.png')
+        formData.append('type', 'conbon_c')
+        // 使用 fetch 函数上传 FormData 到 API https://daotaiwanapi.onrender.com/upload
+        fetch('https://daotaiwanapi.onrender.com/upload', {
+          method: 'POST',
+          body: formData
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data)
+            alert(JSON.stringify(data.message))
+          })
+          .catch((error) => {
+            console.error('Error:', error)
+            alert('Failed to upload image')
+          })
       }, 'image/png')
     }
 
