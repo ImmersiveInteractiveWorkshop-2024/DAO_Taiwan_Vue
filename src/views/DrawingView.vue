@@ -7,7 +7,7 @@
     </div>
     <div id="app" class="position-relative" ref="appContainer">
       <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
-      <div class="w-25"><a href="#" class="button-circle"><ion-icon name="chevron-back-outline"></ion-icon></a></div>
+      <div class="w-25"><a href="#" class="button-circle" @click.prevent="homeButton"><ion-icon name="chevron-back-outline"></ion-icon></a></div>
       <img class="logo_sm " src="/src/assets/images/logo_small.png" alt="logo_sm">
       <div class="w-25 d-flex"><a class="done-button" href="#" @click.prevent="doneDrawing">完成</a></div>
     </nav>
@@ -89,6 +89,9 @@ export default {
     }
   },
   methods: {
+    homeButton () {
+      this.$router.push('/home')
+    },
     updateAppWidth () {
       this.appWidth = this.$refs.appContainer.offsetWidth
       this.ctx.strokeStyle = this.currentColor
@@ -101,6 +104,8 @@ export default {
     clearCanvas () {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       this.backgroundColor = '#FFFFFF'
+      this.ctx.fillStyle = '#ffffff'
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       this.eraser(false)
     },
     fillCanvas () {
@@ -212,6 +217,7 @@ export default {
           .then((response) => response.json())
           .then((data) => {
             console.log(data)
+            document.cookie = `textureCookie=${JSON.stringify(data.data)}; expires=${new Date(Date.now() + 3600 * 1000).toUTCString()}; path=/`
             alert(JSON.stringify(data.message))
             this.$router.push('/result')
           })
@@ -232,14 +238,16 @@ export default {
     this.ctx = this.canvas.getContext('2d')
     this.updateAppWidth() // 初始化更新 app 寬度
     window.addEventListener('resize', this.updateAppWidth) // 監聽窗口大小變化
-    this.canvas.height = window.innerWidth * 0.9
-    this.canvas.width = 576
+    this.canvas.height = 450 * 0.9
+    this.canvas.width = 450 * 0.9
     const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct'))
     if (selectedProduct) {
       this.selectedProduct = selectedProduct
     }
     this.$nextTick(() => {
       this.ctx.strokeStyle = this.colors[0]
+      this.ctx.fillStyle = '#ffffff'
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     })
   },
   beforeUnmount () {
@@ -271,14 +279,16 @@ body {
 }
 
 #app {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   max-width: 450px;
   margin:0 auto;
   background-color: #fff;
   outline: 1px solid #CF2C2F;
-  padding:0.3rem 0;
-  height:100vw;
+  padding:50px 0 5px 0;
+  height:100vh;
 }
 
 h2 {
@@ -287,7 +297,7 @@ h2 {
 }
 
 canvas {
-  width:99%;
+  border: #6A6A6A 1px solid;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -301,6 +311,9 @@ canvas {
 
 }
 nav{
+  position: fixed;
+  top:0px;
+  z-index:3;
   max-width:576px;
   padding:10px 20px;
   align-items: center;
@@ -412,7 +425,7 @@ nav{
 }
 
 .overlay-img {
-  width:100%;
+  width:110%;
   position: absolute;
   top: 50%;
   left: 50%;

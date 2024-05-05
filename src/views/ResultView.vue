@@ -3,10 +3,10 @@
     <div id="app" class="position-relative" ref="appContainer">
       <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
       <img class="logo_white " src="/src/assets/images/logo_white.png" alt="logo_white">
-      <div class="w-25 d-flex"><router-link class="done-button" to="/home">家</router-link></div>
+      <div class="w-25 d-flex"><router-link class="done-button" to="/drawing">返回</router-link></div>
     </nav>
-        <img
-          :src="imageSrc"
+        <img v-if="this.resultData"
+          :src=this.resultData.url
           class="result-image"
           alt="result-image"
         />
@@ -14,14 +14,14 @@
         <img  class="streetlight" src="/src/assets/images/streetlight.png" alt="streetlight">
         <img src="/src/assets/images/toggle-light.png" alt="toggle-light" class="streetlight toggle-light">
         <!-- Toggle Switch -->
-        <div class="d-flex flex-column justify-content-between h-100 py-5 result-content">
+        <div class="d-flex flex-column justify-content-between h-100 pb-5 pt-2 result-content">
             <div class="toggle-switch mx-auto" @click="toggleDarkMode">
             <div class="toggle-handle"></div>
             </div>
-            <p class="result-text">已點亮您的招牌<br>試著在場景中找到他吧！！</p>
+            <p class="result-text pt-3">已點亮您的招牌<br>試著在場景中找到他吧！！</p>
             <div class="d-flex justify-content-between" >
-                <a class="upload-button" href="#" @click.prevent="uploadImage">下載</a>
-                <a class="upload-button" href="#" @click.prevent="uploadImage">大家ㄉ庫</a>
+                <a class="upload-button" href="#" @click.prevent="downloadImage">下載</a>
+                <router-link class="upload-button" to="/gallery">大家ㄉ庫</router-link>
             </div>
         </div>
     </div>
@@ -36,8 +36,11 @@ const socket = io('https://daotaiwanapi.onrender.com', {
 export default {
   data () {
     return {
-      imageSrc: '/src/assets/images/default_image.png', // 預設成果圖片
-      resultData: null
+      resultDataReady: false,
+      resultImageGet: false,
+      resultData: null,
+      textureCookie: null,
+      textureId: null
     }
   },
   methods: {
@@ -46,37 +49,104 @@ export default {
       toggleSwitch.classList.toggle('active')
       const toggleLight = document.querySelector('.toggle-light')
       toggleLight.classList.toggle('active')
-      if (this.resultData) {
+      console.log(this.textureId)
+      if (this.resultImageGet != null || this.textureId != null) {
         if (toggleSwitch.classList.contains('active')) {
-          this.fetchTextureById(this.resultData._id, 'conbon_c', 'light-on')
+          this.lightControllById(this.textureId, 'conbon_c', 'light-on')
         } else {
-          this.fetchTextureById(this.resultData._id, 'conbon_c', 'light-off')
+          this.lightControllById(this.textureId, 'conbon_c', 'light-off')
         }
       }
     },
-    fetchTextureById (id, type, event) {
+    lightControllById (id, type, event) {
       try {
         socket.emit(event, { _id: id, category: type })
       } catch (error) {
         console.error('開關燈失敗:', error)
+      }
+    },
+    fetchResultImage (id) {
+      fetch(`https://daotaiwanapi.onrender.com/results/${id}`, {
+        method: 'GET'
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok')
+          }
+          return response.json()
+        })
+        .then((data) => {
+          console.log(data)
+          this.resultData = data.data[0]
+          this.resultImageGet = true
+          console.log(this.resultData.url)
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
+    },
+    // 下載圖片
+    downloadImage () {
+      if (this.resultData) {
+        const link = document.createElement('a')
+        // link.href = this.resultData.url
+        link.href = this.resultData.url
+        console.log(link.href)
+        link.download = 'DAO-Taiwan-result-image.png'
+
+        fetch(link.href, {
+          mode: 'cors'
+        })
+          .then(response => response.blob())
+          .then(blob => {
+            const url = window.URL.createObjectURL(blob)
+            link.href = url
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+          })
+          .catch(error => {
+            console.error('Error downloading image:', error)
+          })
       }
     }
 
   },
   created () {
     // 監聽後端發送的 message 訊號
-    socket.on('new-texture', (data) => {
+    socket.on('result-upload', (data) => {
       console.log('伺服器傳送訊息:', data)
-      this.resultData = data
+      console.log(this.textureId, data._id)
+      if (data != null && this.textureId === data._id) {
+        this.fetchResultImage(this.textureId)
+        this.resultData = data
+      }
     })
     socket.on('light-on', (data) => {
       console.log('伺服器傳送訊息:', data)
-      this.resultData = data
     })
     socket.on('light-off', (data) => {
       console.log('伺服器傳送訊息:', data)
-      this.resultData = data
     })
+  },
+  mounted () {
+    // 讀取 texture cookie 取得原始 texture image id
+    // console.log(document.cookie)
+    const cookies = document.cookie.split(';')
+    // console.log('cookies length:', cookies.length)
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim().split('=')
+      // console.log('cookie:', cookie)
+      if (cookie[0] === 'textureCookie') {
+        // console.log(`cookie[${i}]:`, cookie)
+        this.textureCookie = JSON.parse(cookie[1])
+        this.textureId = this.textureCookie._id
+        console.log(this.textureId)
+        this.fetchResultImage(this.textureId)
+        break
+      }
+    }
   }
 }
 </script>
@@ -112,6 +182,7 @@ nav{
   max-width:576px;
   padding:10px 20px;
   align-items: center;
+  border-bottom:1px solid #fff;
 }
 .button-circle{
   display: flex;
