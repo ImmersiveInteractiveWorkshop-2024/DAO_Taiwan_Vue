@@ -15,20 +15,20 @@
     </div>
     <div class="position-relative">
       <div class="position-absolute d-flex sign-container w-100 flex-column">
-        <div class="sign-conbon-c w-100"><img  @click="selectProduct('conbon-c')" src="/src/assets/images/models_conbon_c.png" alt=""></div>
-        <div class="sign-conbon-v w-100"><img @click="selectProduct('conbon-v')" src="/src/assets/images/models_conbon_v.png" alt=""></div>
-        <div class="sign-conbon-h w-100"><img @click="selectProduct('conbon-h')" src="/src/assets/images/models_conbon_h.png" alt=""></div>
-        <div class="sign-poster-vu w-100"><img @click="selectProduct('poster-vu')" src="/src/assets/images/models_poster_vu.png" alt=""></div>
+        <div class="sign-conbon-c w-100"><img  @click="selectProduct('conbon_c')" src="/src/assets/images/models_conbon_c.png" alt=""></div>
+        <div class="sign-conbon-v w-100"><img @click="selectProduct('conbon_v')" src="/src/assets/images/models_conbon_v.png" alt=""></div>
+        <div class="sign-conbon-h w-100"><img @click="selectProduct('conbon_h')" src="/src/assets/images/models_conbon_h.png" alt=""></div>
+        <div class="sign-poster-vu w-100"><img @click="selectProduct('poster_vu')" src="/src/assets/images/models_poster_vu.png" alt=""></div>
         <div class="d-flex">
-          <div class="sign-poster-h w-100"><img @click="selectProduct('poster-h')" src="/src/assets/images/models_poster_h.png" alt=""></div>
-          <div class="sign-poster-vs w-100"><img @click="selectProduct('poster-vs')" src="/src/assets/images/models_poster_vs.png" alt=""></div>
+          <div class="sign-poster-h w-100"><img @click="selectProduct('poster_h')" src="/src/assets/images/models_poster_h.png" alt=""></div>
+          <div class="sign-poster-vs w-100"><img @click="selectProduct('poster_vs')" src="/src/assets/images/models_poster_vs.png" alt=""></div>
         </div>
-        <div class="sign-conbon-hl w-100"><img @click="selectProduct('conbon-hl')" src="/src/assets/images/models_conbon_hl.png" alt=""></div>
+        <div class="sign-conbon-hl w-100"><img @click="selectProduct('conbon_hl')" src="/src/assets/images/models_conbon_hl.png" alt=""></div>
         <div class="d-flex">
-          <div class="sign-poster-v w-100"><img @click="selectProduct('poster-v')" src="/src/assets/images/models_poster_v.png" alt=""></div>
-          <div class="sign-poster-hs w-100"><img @click="selectProduct('poster-hs')" src="/src/assets/images/models_poster_hs.png" alt=""></div>
+          <div class="sign-poster-v w-100"><img @click="selectProduct('poster_v')" src="/src/assets/images/models_poster_v.png" alt=""></div>
+          <div class="sign-poster-hs w-100"><img @click="selectProduct('poster_hs')" src="/src/assets/images/models_poster_hs.png" alt=""></div>
         </div>
-        <div class="sign-conbon-u w-100"><img @click="selectProduct('conbon-u')" src="/src/assets/images/models_conbon_u.png" alt=""></div>
+        <div class="sign-conbon-u w-100"><img @click="selectProduct('conbon_u')" src="/src/assets/images/models_conbon_u.png" alt=""></div>
       </div>
       <img class="w-100" src="/src/assets/images/models_buildings.png" alt="buildings"></div>
   </div>
