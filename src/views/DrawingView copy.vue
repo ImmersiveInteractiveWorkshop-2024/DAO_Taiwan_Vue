@@ -14,12 +14,6 @@
       <button type="button" id="rotateButton">rotate</button>
       <h2 class="fs-6 d-none">{{ message }}</h2>
       <div class="canvas-container">
-        <img
-      :src='overlayImgSrc (this.selectedProduct)'
-      class="overlay-img"
-      :class="this.selectedProduct"
-      alt="conbon_c"
-    />
     <canvas
       @mousedown="startPainting"
       @mouseup="finishedPainting"
@@ -28,9 +22,14 @@
       @touchmove="dragging"
       @touchend="finishDragging"
       id="canvas"
-      :width="canvasWidth"
-      :height="canvasHeight"
+      :width="canvasWidthtest"
+      :height="canvasHeighttest"
     ></canvas>
+    <img
+      :src="overlayImgSrc (this.selectedProduct)"
+      class="overlay-img"
+      alt="conbon_c"
+    />
     <div class="stroke-container" ref="strokeContainer" v-if="showColorPicker">
     <div class="stroke-width" draggable="true" ref="strokeWidth"
   @mousedown="startDragging"
@@ -61,7 +60,7 @@
         <a class="save-button" @click.prevent="redo"><img src="/src/assets/images/redo.png" alt=""></a>
         <a class="fill-button" @click.prevent="fillCanvas"><img src="/src/assets/images/fill-bucket.png" alt=""></a>
         <a class="eraser-button" @click.prevent="eraser(true)"><i class="fas fa-eraser"></i></a>
-        <a class="clear-button" @click.prevent="clearCanvas"><i class="fas fa-trash"></i></a>
+        <a class="clear-button d-none" @click.prevent="clearCanvas"><i class="fas fa-trash"></i></a>
         <a class="save-button d-none" @click.prevent="saveCanvas"><i class="fas fa-save"></i></a>
       </div>
       <div class="d-flex justify-content-center mb-5 pb-5" v-if="!showColorPicker">
@@ -90,7 +89,7 @@ export default {
       painting: false,
       canvas: null,
       ctx: null,
-      colors: ['#C73232', '#E27200', '#EAC252', '#E8DF00', '#88D04D', '#2E8100', '#04CBF0', '#4234E9', '#9400F2', '#D526C7', '#FFFFFF', '#000000'],
+      colors: ['#C73232', '#FF00EB', '#D59CF9', '#E6A34B', '#EBC352', '#FDF673', '#D4DAAC', '#A0BEBA', '#9BEC58', '#4234E9', '#FFFFFF', '#000000'],
       currentColor: '#C73232',
       backgroundColor: '#FFFFFF',
       appWidth: 0,
@@ -116,32 +115,10 @@ export default {
           overlayImg: 'https://storage.googleapis.com/texture-image/20240508/conbon_c-052259638-conbon_c.png'
         },
         conbon_v: {
-          width: 1,
-          height: 1,
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/conbon_v-072814348-masks_conbon_v.png'
-        },
-        conbon_h: {
-          width: 0.82,
-          height: 0.82,
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/conbon_h-075041962-masks_conbon_h.png'
-        },
-        poster_vu: {
-          width: 0.82,
-          height: 0.82,
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_vu-080911471-masks_poster_vu.png'
-        },
-        poster_h: {
-          width: 0.82,
-          height: 0.82,
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_h-081819072-models_poster_h.png'
-        },
-        poster_v: {
-          width: 0.82,
-          height: 0.82,
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_v-082633244-models_poster_v.png'
+          width: 0.5,
+          height: 0.9,
+          overlayImg: '/src/assets/images/logo_small.png'
         }
-        // https://storage.googleapis.com/texture-image/20240508/poster_v-082633244-models_poster_v.png
-        // https://storage.googleapis.com/texture-image/20240508/conbon_h-075041962-masks_conbon_h.png
         // 添加更多的產品對應信息
       }
     }
@@ -170,12 +147,14 @@ export default {
       }
     }
   },
+  watch: {
+  },
   methods: {
     // 根據 selectedProduct 返回對應的 overlay-img 圖片路徑
     overlayImgSrc (product) {
       console.log('更新遮罩：', product)
       console.log(this.productInfo[product])
-      if (this.productInfo[product]) {
+      if (product && this.productInfo[product]) {
         return this.productInfo[product].overlayImg
       } else {
         return this.productInfo.conbon_c.overlayImg // 默認圖片路徑
@@ -504,7 +483,7 @@ body {
   background-color: #fff;
   outline: 1px solid #CF2C2F;
   padding:50px 0 5px 0;
-  height: 100dvh;
+  height:100vh;
 }
 
 h2 {
@@ -529,7 +508,7 @@ canvas {
 nav{
   position: fixed;
   top:0px;
-  z-index:4;
+  z-index:3;
   width: 100%;
   max-width:450px;
   padding:10px 20px;
@@ -644,59 +623,14 @@ nav{
   padding-top: 100%;
 }
 
-.conbon_c {
+.overlay-img {
   width:110%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 3; /* 確保圖片在 Canvas 上方 */
+  z-index: 2; /* 確保圖片在 Canvas 上方 */
   pointer-events: none;
-}
-.conbon_v {
-  width:103%;
-  position: absolute;
-  top: 51%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3; /* 確保圖片在 Canvas 上方 */
-  pointer-events: none;
-}
-.conbon_h {
-  width:100%;
-  position: absolute;
-  top: 51%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3; /* 確保圖片在 Canvas 上方 */
-  pointer-events: none;
-}
-.poster_vu {
-  width:100%;
-  position: absolute;
-  top: 51%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3; /* 確保圖片在 Canvas 上方 */
-  pointer-events: none;
-}
-.poster_h {
-  width:100%;
-  position: absolute;
-  top: 51%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3; /* 確保圖片在 Canvas 上方 */
-  pointer-events:none;
-}
-.poster_v{
-  width:100%;
-  position: absolute;
-  top: 51%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3; /* 確保圖片在 Canvas 上方 */
-  pointer-events:none;
 }
 .stroke-bar{
   width: 100%;
@@ -713,7 +647,7 @@ nav{
   transform: translate(-50%, -50%);
   top:80%;
   right: 0%;
-  z-index: 3;
+  z-index: 2;
   height:185px;
 }
 .stroke-width{

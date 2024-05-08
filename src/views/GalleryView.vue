@@ -7,7 +7,7 @@
       </li>
     </ul>
     <div class="footer-link">
-      <router-link class="upload-button" to="/drawing">再玩一次</router-link>
+      <router-link class="upload-button" to="/models">再玩一次</router-link>
     </div>
 </template>
 
@@ -50,7 +50,6 @@ export default {
   display: block;
   padding:24px 0;
   width:80%;
-  height:fit-content;
   margin: 0 auto;
 }
 .image-item {

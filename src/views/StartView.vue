@@ -1,6 +1,6 @@
 <template>
   <h1 class="d-none">開始選擇頁面</h1>
-  <div id="app">
+  <div id="app" class="position-relative">
     <nav class="my-0 d-flex justify-content-between align-items-center">
       <img
         class="logo_sm"
@@ -51,9 +51,14 @@ a {
   text-decoration: none;
 }
 nav {
-  max-width: 576px;
-  padding: 10px 20px;
+  position: fixed;
+  top:0px;
+  z-index:3;
+  max-width: 450px; /* 限制寬度不超過 450px */
+  width: 100%;
+  padding:10px 20px;
   align-items: center;
+  background-color:#fff;
   border-bottom: 1px solid #cf2c2f;
 }
 #app {
@@ -68,6 +73,8 @@ nav {
   background-color: #fff;
   outline: 1px solid #cf2c2f;
   height: 100vh;
+  height: 100dvh;
+  padding:50px 0 5px 0;
 }
 .home-button {
   display: block;
@@ -80,7 +87,6 @@ nav {
 }
 .logo_sm {
   width: 60%;
-  height: fit-content;
   display: block;
 }
 </style>

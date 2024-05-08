@@ -2,7 +2,7 @@
     <div id="app" >
         <img class="px-4 pt-5 pb-4" src="/src/assets/images/logo_home.png" alt="logo_home">
         <img class="w-100 d-block h-auto" src="/src/assets/images/buildings.png" alt="logo_home">
-        <div class="mx-auto"><router-link class="start-button" to="/start">開始</router-link></div>
+        <div class="mx-auto"><router-link class="start-button" to="/start">Start !</router-link></div>
     </div>
 </template>
 
@@ -20,6 +20,7 @@ export default {}
   outline: 1px solid #CF2C2F;
   padding:0.3rem 0;
   height:100vh;
+  height: 100dvh;
 }
 .start-button{
   text-decoration: none;
@@ -27,7 +28,12 @@ export default {}
   font-size:25px;
   color: #CF2C2F;
   border: 1px solid #CF2C2F;
+  background-color:#fff ;
   border-radius: 50px;
   padding:12px 40px;
+  position: fixed;
+  bottom: 25px; /* 距離底部的距離 */
+  left: 50%; /* 距離左邊的距離 */
+  transform: translateX(-50%); /* 將元素水平置中 */
 }
 </style>

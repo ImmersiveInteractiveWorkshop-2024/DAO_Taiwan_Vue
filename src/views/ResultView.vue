@@ -3,7 +3,7 @@
     <div id="app" class="position-relative" ref="appContainer">
       <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
       <img class="logo_white " src="/src/assets/images/logo_white.png" alt="logo_white">
-      <div class="w-25 d-flex"><router-link class="done-button" to="/drawing">返回</router-link></div>
+      <div class="w-25 d-flex"><router-link class="done-button" to="/home">家</router-link></div>
     </nav>
         <img v-if="this.resultData"
           :src=this.resultData.url
@@ -18,7 +18,7 @@
             <div class="toggle-switch mx-auto" @click="toggleDarkMode">
             <div class="toggle-handle"></div>
             </div>
-            <p class="result-text pt-3">已點亮您的招牌<br>試著在場景中找到他吧！！</p>
+            <p class="result-text pt-3">開燈點亮您的招牌<br>試著在場景中找到他吧！！</p>
             <div class="d-flex justify-content-between" >
                 <a class="upload-button" href="#" @click.prevent="downloadImage">下載</a>
                 <router-link class="upload-button" to="/gallery">大家ㄉ庫</router-link>
@@ -52,9 +52,9 @@ export default {
       console.log(this.textureId)
       if (this.resultImageGet != null || this.textureId != null) {
         if (toggleSwitch.classList.contains('active')) {
-          this.lightControllById(this.textureId, 'conbon_c', 'light-on')
+          this.lightControllById(this.textureId, this.resultData.category, 'light-on')
         } else {
-          this.lightControllById(this.textureId, 'conbon_c', 'light-off')
+          this.lightControllById(this.textureId, this.resultData.category, 'light-off')
         }
       }
     },
@@ -144,6 +144,7 @@ export default {
         this.textureId = this.textureCookie._id
         console.log(this.textureId)
         this.fetchResultImage(this.textureId)
+        // this.fetchResultImage('66348ee91976ae8cd933fdc4')
         break
       }
     }
@@ -167,8 +168,9 @@ a{
   margin:0 auto;
   background-color: #242424;
   outline: 1px solid #CF2C2F;
-  padding:0.3rem 0;
+  padding:50px 0 5px 0;
   height:100vh;
+  height: 100dvh;
 }
 .result-content{
     background-color:#242424;
@@ -179,7 +181,11 @@ h2 {
 }
 
 nav{
-  max-width:576px;
+  position: fixed;
+  top:0;
+  max-width: 450px; /* 限制寬度不超過 450px */
+  width: 100%;
+  z-index: 2;
   padding:10px 20px;
   align-items: center;
   border-bottom:1px solid #fff;
@@ -207,7 +213,6 @@ nav{
 }
 .logo_white{
   width:60%;
-  height:fit-content;
   display: block;
 }
 
@@ -223,7 +228,7 @@ nav{
 }
 .result-image {
   display: block;
-  width:72%;
+  width:60%;
   height:auto;
   margin:0 auto;
   border-radius:33px;
