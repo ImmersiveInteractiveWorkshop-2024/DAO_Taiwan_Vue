@@ -8,7 +8,6 @@
         alt="logo_sm"
       />
       <div class="w-25 d-flex">
-        <router-link class="home-button" to="/home">家</router-link>
       </div>
     </nav>
     <img
@@ -79,8 +78,8 @@ nav {
 .home-button {
   display: block;
   color: #cf2c2f;
-  font-size: 12px;
-  padding: 6px 14px;
+  font-size: 14px;
+  padding: 8px 16px;
   border: 1px solid #cf2c2f;
   border-radius: 30px;
   margin-left: auto;

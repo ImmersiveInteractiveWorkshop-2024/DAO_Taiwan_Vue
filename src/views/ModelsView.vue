@@ -2,8 +2,8 @@
   <h1 class="d-none">模型選擇頁面</h1>
   <div id="app" class="position-relative">
     <nav class="my-0 d-flex justify-content-between align-items-center ">
-      <div class="w-25"><router-link class="button-circle" to="/home"><ion-icon name="chevron-back-outline"></ion-icon></router-link></div>
-      <div class="w-25 d-flex"><router-link class="home-button" to="/home">家</router-link></div>
+      <div class="w-25"><router-link class="button-circle" to="/start"><ion-icon name="chevron-back-outline"></ion-icon></router-link></div>
+      <div class="w-25 d-flex"></div>
     </nav>
     <div class="text-center">
       <img
@@ -74,7 +74,7 @@ export default {
   methods: {
     selectProduct (product) {
       this.selectedProduct = product
-      alert(`您選擇了${this.selectedProduct}`)
+      // alert(`您選擇了${this.selectedProduct}`)
       localStorage.setItem('selectedProduct', JSON.stringify(product))
       this.$router.push('/drawing')
     }
@@ -96,7 +96,6 @@ nav {
   z-index: 2;
   padding: 10px 20px;
   align-items: center;
-  background-color: #fff;
 }
 #app {
   display: flex;
@@ -104,7 +103,7 @@ nav {
   flex-direction: column;
   max-width: 450px;
   margin: 0 auto;
-  padding:50px 0 5px 0;
+  padding:50px 0 0 0;
   background-color: #fff;
   outline: 1px solid #cf2c2f;
   color: #CF2C2F;
@@ -112,8 +111,8 @@ nav {
 .home-button {
   display: block;
   color: #cf2c2f;
-  font-size: 12px;
-  padding: 6px 14px;
+  font-size: 14px;
+  padding: 8px 16px;
   border: 1px solid #cf2c2f;
   border-radius: 30px;
   margin-left: auto;
@@ -121,15 +120,16 @@ nav {
 .button-circle{
   display: flex;
   align-items: center;
-  font-size: 20px;
-  width: 30px;
-  height: 30px;
+  font-size: 25px;
+  width: 35px;
+  height: 35px;
   color: #CF2C2F;
   border: 1px solid #CF2C2F;
   border-radius: 50%;
   margin-right: auto;
   justify-content: center;
 }
+
 .logo_sm {
   width: 60%;
   display: block;

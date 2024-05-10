@@ -2,8 +2,8 @@
     <h1 class="d-none">結果頁面</h1>
     <div id="app" class="position-relative" ref="appContainer">
       <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
-      <img class="logo_white " src="/src/assets/images/logo_white.png" alt="logo_white">
-      <div class="w-25 d-flex"><router-link class="done-button" to="/home">家</router-link></div>
+      <img class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_white.png" alt="logo_white">
+      <div class="w-25 d-flex d-none"><router-link class="done-button" to="/home">家</router-link></div>
     </nav>
         <img v-if="this.resultData"
           :src=this.resultData.url
@@ -18,7 +18,7 @@
             <div class="toggle-switch mx-auto" @click="toggleDarkMode">
             <div class="toggle-handle"></div>
             </div>
-            <p class="result-text pt-3">開燈點亮您的招牌<br>試著在場景中找到他吧！！</p>
+            <p class="result-text pt-3">點選按鈕照亮您的招牌<br>試著在場景中找到他吧！！</p>
             <div class="d-flex justify-content-between" >
                 <a class="upload-button" href="#" @click.prevent="downloadImage">下載</a>
                 <router-link class="upload-button" to="/gallery">大家ㄉ庫</router-link>
@@ -188,14 +188,13 @@ nav{
   z-index: 2;
   padding:10px 20px;
   align-items: center;
-  border-bottom:1px solid #fff;
 }
 .button-circle{
   display: flex;
   align-items: center;
-  font-size: 20px;
-  width: 30px;
-  height: 30px;
+  font-size: 25px;
+  width: 35px;
+  height: 35px;
   color: #CF2C2F;
   border: 1px solid #CF2C2F;
   border-radius: 50%;
@@ -204,10 +203,10 @@ nav{
 }
 
 .done-button{
-  color:#fff;
-  font-size: 12px;
-  padding:6px 14px;
-  border:1px solid #fff;
+  color:#CF2C2F;
+  font-size: 14px;
+  padding:8px 16px;
+  border:1px solid #CF2C2F;
   border-radius:30px;
   margin-left: auto;
 }
