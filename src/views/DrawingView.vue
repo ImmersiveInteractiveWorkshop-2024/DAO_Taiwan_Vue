@@ -12,7 +12,10 @@
       <div class="w-25 d-flex"><a class="done-button" href="#" @click.prevent="doneDrawing">完成</a></div>
     </nav>
       <button type="button" class="d-none" id="rotateButton">rotate</button>
-      <h2 class="fs-6">{{ message }}</h2>
+      <h2 class="fs-6 d-none" >{{ message }}</h2>
+      <div class="landscape-upload-button d-flex justify-content-center mb-5 pb-5 position-fixed" v-if="!showColorPicker && !isLandscape">
+        <a class="upload-button " href="#" @click.prevent="uploadImage">確認上傳</a>
+      </div>
       <div class="canvas-container">
         <img
       :src='overlayImgSrc (this.selectedProduct)'
@@ -29,7 +32,7 @@
       @touchend="finishDragging"
       :width="canvasWidth"
       :height="canvasHeight"
-      :style="{ left: canvasLeft }"
+      :style="{ left: canvasLeft ,top:canvasTop}"
     ></canvas>
     <div class="stroke-container" ref="strokeContainer" v-if="showColorPicker">
     <div class="stroke-width" draggable="true" ref="strokeWidth"
@@ -65,7 +68,7 @@
           @click="changeColor(color)"
           :class="{ 'currentColor': color === this.currentColor }"></div></div>
       </div>
-      <div class="d-flex justify-content-center mb-5 pb-5" v-if="!showColorPicker">
+      <div class="d-flex justify-content-center mb-5 pb-5" v-if="!showColorPicker && isLandscape">
         <a class="upload-button " href="#" @click.prevent="uploadImage">確認上傳</a>
       </div>
     </div>
@@ -88,6 +91,7 @@ export default {
   data () {
     return {
       canvasLeft: '50%',
+      canvasTop: '50%',
       selectedProduct: null,
       message: ' ',
       painting: false,
@@ -117,6 +121,7 @@ export default {
           width: 0.8,
           height: 0.8,
           left: '44%',
+          top: '50%',
           orientation: 'portrait',
           overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_c-201802413-new_conbon_c.png'
         },
@@ -131,6 +136,7 @@ export default {
           width: 0.55,
           height: 0.55,
           left: '49.5%',
+          top: '40%',
           orientation: 'landscape',
           overlayImg: 'https://storage.googleapis.com/texture-image/20240510/conbon_h-002815715-new_conbon_h.png'
         },
@@ -220,6 +226,7 @@ export default {
       const productData = this.productInfo[product]
       if (productData) {
         this.canvasLeft = productData.left
+        this.canvasTop = productData.top
         this.orientation = productData.orientation
         return productData.overlayImg
       }
@@ -242,9 +249,8 @@ export default {
             this.showOverlay('請旋轉手機至直向')
           }
         } else {
-        // 方向匹配时清空消息
-          if (productOrientation === 'landscape') {
-            // 将最大宽度设置为100%
+          if (productOrientation === 'landscape' && this.showColorPicker !== false) {
+            // app/nav最大寬度設置100%
             document.querySelector('.app').style.maxWidth = '100%'
             document.querySelector('.nav').style.maxWidth = '100%'
             document.querySelector('.canvas-container').style.paddingTop = '35%'
@@ -252,8 +258,11 @@ export default {
             document.querySelector('.tools-container').style.position = 'fixed'
             document.querySelector('.tools-container').style.bottom = '0'
             document.querySelector('.tools-container').style.zIndex = '10'
+            document.querySelector('.tools-container').classList.add('landscape')
             document.querySelector('.color-picker').classList.add('landscape')
             document.querySelector('.tool-list').classList.add('landscape')
+            document.querySelector('.stroke-container').classList.add('landscape')
+            document.querySelector('.stroke-width').classList.add('landscape')
           }
           this.hideOverlay()
           this.message = ''
@@ -469,6 +478,8 @@ export default {
       }, 'image/png')
     },
     doneDrawing () {
+      const mediaQueryList = window.matchMedia('(orientation: landscape)')
+      mediaQueryList.removeEventListener('change', () => this.checkOrientation())
       this.canvasEnabled = false
       this.showColorPicker = false
     },
@@ -630,7 +641,6 @@ canvas {
   transform: translate(-50%, -50%);
   margin:0 auto;
   display: block;
-  background-color: transparent;
   border-radius: 5px;
   cursor: crosshair;
   z-index: 1;
@@ -667,6 +677,11 @@ nav{
   border-radius:30px;
   margin-left: auto;
 }
+.landscape-upload-button{
+  z-index:10;
+  top:20px;
+  right:20px;
+}
 .logo_sm{
   width:40%;
   margin: 0 auto;
@@ -687,11 +702,13 @@ nav{
   flex-wrap: wrap;
   margin: 1rem 1.5rem;
   padding: 10px;
-  background:#F8F8F8;
+  background:#EBEBEB;
   border-radius: 31px;
   &.landscape{
     display: flex;
     width:60%;
+    justify-content: space-around;
+    padding:10px 18px;
   }
 }
 .color-picker .currentColor{
@@ -717,6 +734,11 @@ nav{
   padding:0.3rem;
   margin:0.5rem 1.5rem;
   background:#E6E6E6;
+  &.landscape{
+    padding:10px;
+    margin: 1rem 0 1rem 1.5rem;
+    width: 40%;
+  }
 }
 .tool-list a {
   display: block;
@@ -737,6 +759,19 @@ nav{
     width:20px;
     height:auto;
   }
+}
+.tools-container{
+  &.landscape{
+    display: flex;
+    position: fixed;
+    bottom: 0px;
+    z-index: 10;
+    width: 100%;
+  }
+  position: fixed;
+  bottom: 0px;
+  z-index: 10;
+  width: 100%;
 }
 .upload-button{
   display:block;
@@ -870,6 +905,11 @@ nav{
   right: 3%;
   z-index: 3;
   height:218px;
+  &.landscape{
+    width:20px;
+    top:45%;
+    height:198px;
+  }
 }
 .stroke-width{
   border-radius: 50%;
@@ -881,6 +921,12 @@ nav{
   right: 0%;
   top:50%;
   z-index: 3;
-
+  &.landscape{
+    transform: translate(-50%, -50%);
+    width:24px;
+    height: 24px;
+    top:50%;
+    left:50%;
+  }
 }
 </style>
