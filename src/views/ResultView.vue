@@ -183,7 +183,7 @@ h2 {
 nav{
   position: fixed;
   top:0;
-  max-width: 450px; /* 限制寬度不超過 450px */
+  max-width: 450px;
   width: 100%;
   z-index: 2;
   padding:10px 20px;

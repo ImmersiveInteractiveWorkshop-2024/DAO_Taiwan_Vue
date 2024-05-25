@@ -1,20 +1,13 @@
 <template>
   <div>
-    <h1 class="d-none">繪製貼圖</h1>
-    <div class="d-none " v-if="selectedProduct">
-      <h2>選中的物件: {{ selectedProduct.name }}</h2>
-      <p>物件描述: {{ selectedProduct.description }}</p>
-    </div>
-    <div id="app" class="app position-relative" ref="appContainer">
+    <div id="app" class="app position-relative" ref="appContainer" @click="fullScreen">
       <nav  class="nav my-0 mx-auto d-flex justify-content-between align-items-center " v-if="showColorPicker">
       <div class="w-25"><a href="#" class="button-circle" @click.prevent="backwardButton"><ion-icon name="chevron-back-outline"></ion-icon></a></div>
       <img class="logo_sm d-none " src="/src/assets/images/logo_small.png" alt="logo_sm">
       <div class="w-25 d-flex"><a class="done-button" href="#" @click.prevent="doneDrawing">完成</a></div>
     </nav>
-      <button type="button" class="d-none" id="rotateButton">rotate</button>
-      <h2 class="fs-6 d-none" >{{ message }}</h2>
       <div class="landscape-upload-button d-flex justify-content-center mb-5 pb-5 position-fixed" v-if="!showColorPicker && !isLandscape">
-        <a class="upload-button " href="#" @click.prevent="uploadImage">確認上傳</a>
+        <button :disabled="buttonDisabled" @click="uploadImage" class="upload-button ">{{ buttonText }}</button>
       </div>
       <div class="canvas-container">
         <img
@@ -32,7 +25,7 @@
       @touchend="finishDragging"
       :width="canvasWidth"
       :height="canvasHeight"
-      :style="{ left: canvasLeft ,top:canvasTop}"
+      :style="{ left: canvasLeft ,top:canvasTop,clipPath:clipPath}"
     ></canvas>
     <div class="stroke-container" ref="strokeContainer" v-if="showColorPicker">
     <div class="stroke-width" draggable="true" ref="strokeWidth"
@@ -51,21 +44,21 @@
 </div>
     <div class="tools-container">
       <div class="tool-list d-flex" v-if="showColorPicker">
-        <a class="painting-button" @click.prevent="paintingSelect"><i class="fas fa-paint-brush"></i></a>
-        <a class="clear-button" @click.prevent="undo"><img src="/src/assets/images/undo.png" alt=""></a>
-        <a class="save-button" @click.prevent="redo"><img src="/src/assets/images/redo.png" alt=""></a>
-        <a class="fill-button" @click.prevent="fillCanvas"><img src="/src/assets/images/fill-bucket.png" alt=""></a>
-        <a class="eraser-button" @click.prevent="eraser(true)"><i class="fas fa-eraser"></i></a>
-        <a class="clear-button" @click.prevent="clearCanvas"><i class="fas fa-trash"></i></a>
+        <a class="painting-button" @click.prevent="paintingSelect(); toggleActive(0)"  :class="{ 'active': activeButton == 0}"><i class="fas fa-paint-brush"></i></a>
+        <a class="clear-button" @click.prevent="undo(); toggleActive(1)" :class="{ 'active': activeButton == 1 }"><img src="/src/assets/images/undo.png" alt=""></a>
+        <a class="save-button" @click.prevent="redo(); toggleActive(2)" :class="{ 'active': activeButton == 2 }"><img src="/src/assets/images/redo.png" alt=""></a>
+        <a class="fill-button" @click.prevent="fillCanvas(); toggleActive(3)" :class="{ 'active': activeButton == 3 }"><img src="/src/assets/images/fill-bucket.png" alt=""></a>
+        <a class="eraser-button"  @click.prevent="toggleActive(4); white()" :class="{ 'active': activeButton == 4 }"><i class="fas fa-eraser"></i></a>
+        <a class="clear-button" @click.prevent="clearCanvas(); toggleActive(5)" :class="{ 'active': activeButton == 5 }"><i class="fas fa-trash"></i></a>
         <a class="save-button d-none" @click.prevent="saveCanvas"><i class="fas fa-save"></i></a>
       </div>
-      <div class="color-picker " v-if="showColorPicker">
+      <div class="color-picker"  v-if="showColorPicker">
         <div
           v-for="color in colors"
           :key="color"
         ><div class="color-box "
           :style="{  backgroundColor: color, outlineColor: color}"
-          @click="changeColor(color)"
+          @click="changeColor(color); toggleActive(0)"
           :class="{ 'currentColor': color === this.currentColor }"></div></div>
       </div>
       <div class="d-flex justify-content-center mb-5 pb-5" v-if="!showColorPicker && isLandscape">
@@ -90,8 +83,18 @@ socket.on('message', function (data) {
 export default {
   data () {
     return {
+      activeButton: null,
+      buttons: [
+        { label: 'painting', active: false },
+        { label: 'undo', active: false },
+        { label: 'redo', active: false },
+        { label: 'fill', active: false },
+        { label: 'erase', active: false },
+        { label: 'clear', active: false }
+      ],
       canvasLeft: '50%',
       canvasTop: '50%',
+      clipPath: null,
       selectedProduct: null,
       message: ' ',
       painting: false,
@@ -120,82 +123,100 @@ export default {
         conbon_c: {
           width: 0.8,
           height: 0.8,
-          left: '44%',
-          top: '50%',
+          left: '43.85%',
+          top: '49.5%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_c-201802413-new_conbon_c.png'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_c-201802413-new_conbon_c.png',
+          clipPath: 'circle(47% at 50% 50%)'
         },
         conbon_v: {
           width: 1,
           height: 1,
           left: '50%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/conbon_v-072814348-masks_conbon_v.png'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/conbon_v-072814348-masks_conbon_v.png',
+          clipPath: 'inset(1.5% 34.5% 1.5% 34.5%)'
         },
         conbon_h: {
           width: 0.55,
           height: 0.55,
           left: '49.5%',
-          top: '40%',
+          top: '29%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240510/conbon_h-002815715-new_conbon_h.png'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240510/conbon_h-002815715-new_conbon_h.png',
+          clipPath: 'inset(28.2% 2% 24.1% 2%)'
         },
         poster_vu: {
           width: 0.82,
           height: 0.82,
           left: '44%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_vu-080911471-masks_poster_vu.png'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_vu-080911471-masks_poster_vu.png',
+          clipPath: 'inset(6.5% 25% 1% 40.5%)'
         },
         poster_h: {
-          width: 0.82,
-          height: 0.82,
-          left: '44%',
-          orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_h-081819072-models_poster_h.png'
+          width: 0.46,
+          height: 0.46,
+          left: '50%',
+          top: '35%',
+          orientation: 'landscape',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_h-081819072-models_poster_h.png',
+          clipPath: 'inset(27.5% 8.5% 24% 9%)'
         },
         poster_vs: {
-          width: 0.82,
-          height: 0.82,
-          left: '44%',
-          orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/poster_vs-180239779-models_poster_vs.png'
+          width: 0.46,
+          height: 0.46,
+          left: '50%',
+          top: '35%',
+          orientation: 'landscape',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/poster_vs-180239779-models_poster_vs.png',
+          clipPath: 'inset(24.2% 9% 20% 9%)'
         },
         conbon_hl: {
-          width: 0.82,
-          height: 0.82,
-          left: '44%',
-          orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_hl-180254547-models_conbon_hl.png'
+          width: 0.85,
+          height: 0.85,
+          left: '46%',
+          top: '39%',
+          orientation: 'landscape',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240510/conbon_hl-040108228-models_conbon_hl.png',
+          clipPath: 'inset(41.9% 0% 41.1% 0%)'
         },
         poster_hs: {
-          width: 0.82,
-          height: 0.82,
-          left: '44%',
-          orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/poster_hs-181336719-models_poster_hs.png'
+          width: 0.32,
+          height: 0.32,
+          left: '50%',
+          top: '34%',
+          orientation: 'landscape',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/poster_hs-181336719-models_poster_hs.png',
+          clipPath: 'inset(8% 1.2% 8% 1.2%)'
         },
         poster_v: {
-          width: 0.82,
-          height: 0.82,
-          left: '44%',
+          width: 0.75,
+          height: 0.75,
+          left: '50%',
+          top: '55%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_v-082633244-models_poster_v.png'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_v-082633244-models_poster_v.png',
+          clipPath: 'inset(0% 18.5% 6% 19.5%)'
         },
         conbon_u: {
-          width: 0.82,
-          height: 0.82,
-          left: '44%',
+          width: 0.7,
+          height: 0.7,
+          left: '48%',
+          top: '42%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_u-181347300-models_conbon_u.png'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_u-181347300-models_conbon_u.png',
+          clipPath: 'inset(4% 14% 5% 16.8%)'
         }
         // 添加更多的產品對應信息
       },
-      reloadCount: 0, // 控制重新加载的状态
-      orientation: 'portrait'
+      orientation: 'portrait',
+      buttonDisabled: false,
+      buttonText: '確認上傳' // 提交貼圖
     }
   },
   computed: {
+
     canvasWidthtest () {
       return this.appWidth * 0.9
     },
@@ -220,6 +241,10 @@ export default {
     }
   },
   methods: {
+    fullScreen () {
+      this.enterFullscreen()
+      this.hideOverlay()
+    },
     // 根據 selectedProduct 返回對應的 overlay-img 圖片路徑
     overlayImgSrc (product) {
       console.log('更新遮罩：', product)
@@ -228,8 +253,13 @@ export default {
         this.canvasLeft = productData.left
         this.canvasTop = productData.top
         this.orientation = productData.orientation
+        this.clipPath = productData.clipPath
         return productData.overlayImg
       }
+    },
+    white () {
+      this.ctx.strokeStyle = '#FFF'
+      this.currentColor = '#FFF'
     },
     checkOrientation () {
     // 获取设备当前的方向
@@ -254,15 +284,12 @@ export default {
             document.querySelector('.app').style.maxWidth = '100%'
             document.querySelector('.nav').style.maxWidth = '100%'
             document.querySelector('.canvas-container').style.paddingTop = '35%'
-            document.querySelector('.tools-container').style.display = 'flex'
-            document.querySelector('.tools-container').style.position = 'fixed'
-            document.querySelector('.tools-container').style.bottom = '0'
-            document.querySelector('.tools-container').style.zIndex = '10'
             document.querySelector('.tools-container').classList.add('landscape')
             document.querySelector('.color-picker').classList.add('landscape')
             document.querySelector('.tool-list').classList.add('landscape')
             document.querySelector('.stroke-container').classList.add('landscape')
             document.querySelector('.stroke-width').classList.add('landscape')
+            document.querySelector('.color-box').classList.add('landscape')
           }
           this.hideOverlay()
           this.message = ''
@@ -271,29 +298,36 @@ export default {
     },
     showOverlay (message) {
     // 創建遮罩元素
-      const overlay = document.createElement('div')
-      overlay.id = 'overlay' // 加上 id 屬性
-      overlay.style.position = 'fixed'
-      overlay.style.top = '0'
-      overlay.style.left = '0'
-      overlay.style.width = '100%'
-      overlay.style.height = '100%'
-      overlay.style.background = 'rgba(1, 1, 1, 1)'
-      overlay.style.color = '#fff'
-      overlay.style.display = 'flex'
-      overlay.style.alignItems = 'center'
-      overlay.style.justifyContent = 'center'
-      overlay.style.fontSize = '24px'
-      overlay.style.zIndex = '10'
-      overlay.innerHTML = message
+      const app = document.querySelector('.app')
+      if (app) {
+        const overlay = document.createElement('div')
+        overlay.id = 'overlay' // 加上 id 屬性
+        overlay.style.position = 'fixed'
+        overlay.style.top = '0'
+        overlay.style.left = '0'
+        overlay.style.width = '100%'
+        overlay.style.height = '100%'
+        overlay.style.background = 'rgba(255, 255, 255, 1)'
+        overlay.style.color = '#E13237'
+        overlay.style.display = 'flex'
+        overlay.style.alignItems = 'center'
+        overlay.style.justifyContent = 'center'
+        overlay.style.fontSize = '24px'
+        overlay.style.zIndex = '10'
+        overlay.innerHTML = message
+        overlay.touvhAction = 'none'
 
-      // 將遮罩元素加入到 body 中
-      document.body.appendChild(overlay)
+        // 將遮罩元素加入到 body 中
+        document.querySelector('.app').appendChild(overlay)
+      }
     },
     hideOverlay () {
       const overlay = document.getElementById('overlay')
       if (overlay) {
         overlay.parentNode.removeChild(overlay)
+        this.ctx.strokeStyle = this.colors[0]
+        this.ctx.fillStyle = '#ffffff'
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       }
     },
     updateOverlayImgSrc () {
@@ -303,6 +337,18 @@ export default {
         this.overlayImgSrc = this.productInfo.conbon_c.overlayImg
         console.log('沒有找到其他招牌')
       }
+    },
+    toggleActive (buttonIndex) {
+      // 當按鍵被點擊時，將 activeButtonIndex 設置為被點擊的按鍵索引
+      console.log('yess')
+      this.activeButton = buttonIndex
+      console.log(this.activeButton)
+      // 將除了被點擊的按鍵之外的其他按鍵的 active 狀態設置為 false
+      this.buttons.forEach((button, index) => {
+        if (index !== buttonIndex) {
+          button.active = false
+        }
+      })
     },
     backwardButton () {
       this.$router.push('/models')
@@ -418,9 +464,16 @@ export default {
       this.ctx.beginPath()
       this.history.push(this.canvas.toDataURL())
     },
+    eraserAndToggleActive () {
+      // this.eraser(true)
+      this.toggleActive(4)
+      this.ctx.strokeStyle = '#FFFFFF'
+      // this.eraser(true)
+    },
     eraser (state) {
       if (state) {
         this.ctx.strokeStyle = '#FFFFFF'
+        console.log('11111')
       } else {
         this.ctx.strokeStyle = this.currentColor
       }
@@ -446,6 +499,10 @@ export default {
     },
     uploadImage () {
     // 設定目標尺寸為 1024x1024
+      // 禁用按鍵
+      this.buttonDisabled = true
+      // 調整按鍵內容與樣式
+      this.buttonText = '街景生產中 ⋯ '
       const newCanvas = document.createElement('canvas')
       const newContext = newCanvas.getContext('2d')
       newCanvas.width = 1024
@@ -469,11 +526,15 @@ export default {
             console.log(data)
             document.cookie = `textureCookie=${JSON.stringify(data.data)}; expires=${new Date(Date.now() + 3600 * 1000).toUTCString()}; path=/`
             alert(JSON.stringify(data.message))
+            this.buttonText = '確認上傳'
+            this.buttonDisabled = false
             this.$router.push('/result')
           })
           .catch((error) => {
+            this.buttonText = '確認上傳'
+            this.buttonDisabled = false
             console.error('Error:', error)
-            alert('Failed to upload image')
+            alert('圖片上傳錯誤')
           })
       }, 'image/png')
     },
@@ -530,23 +591,14 @@ export default {
     stopDragging () {
       this.strokeDragging = false
     },
-    reloadComponent () {
-      if (this.reloadCount < 3) {
-        // 这里执行重新加载组件的逻辑
-        console.log(this.reloadCount)
-        // 重新加载后增加计数器
-        this.reloadCount++
-        // 使用 $forceUpdate() 方法强制组件重新渲染
-        this.$forceUpdate()
-        // 获取 canvas 和 overlay-img 元素
-        const overlayImgElement = document.querySelector('.overlay-img')
-        // 设置新的 z-index 值
-        if (overlayImgElement) {
-          overlayImgElement.style.zIndex = '3'
-          console.log('Reloading...')
-        } else {
-          console.log('Stopped reloading.')
-        }
+    enterFullscreen () {
+      const content = this.$refs.appContainer
+
+      // 如果支援 Fullscreen API
+      if (content.requestFullscreen) {
+        content.requestFullscreen()
+      } else if (content.webkitRequestFullscreen) {
+        content.webkitRequestFullscreen()
       }
     }
   },
@@ -574,10 +626,9 @@ export default {
     document.addEventListener('touchstart', this.startStrokeDragging)
     document.addEventListener('touchmove', this.handleTouchDragging)
     document.addEventListener('touchend', this.stopDragging)
-    this.reloadComponent()
-    this.reloadComponent()
-    this.reloadComponent()
-    this.reloadComponent()
+    this.ctx.strokeStyle = this.colors[0]
+    this.ctx.fillStyle = '#ffffff'
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
   },
   beforeUnmount () {
     window.removeEventListener('resize', this.updateAppWidth) // 移除窗口大小變化監聽器
@@ -628,13 +679,29 @@ body {
   touch-action: none;
 }
 
+#app:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 3;
+  background-image: url('../assets/images/background_texture.png');
+  background-repeat: repeat;
+  background-position: 50% 0;
+  background-size: cover;
+  pointer-events:none;
+}
 h2 {
   text-align: center;
   margin-bottom: 1rem;
 }
 
 canvas {
-  border: #6A6A6A 1px solid;
+  // border: #6A6A6A 1px solid;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -643,7 +710,7 @@ canvas {
   display: block;
   border-radius: 5px;
   cursor: crosshair;
-  z-index: 1;
+  z-index: 4;
 
 }
 nav{
@@ -687,14 +754,24 @@ nav{
   margin: 0 auto;
 }
 .color-box {
-  width: 25px;
-  height: 25px;
+
+  width: 20px;
+  height: 20px;
   margin: 7px auto;
   cursor: pointer;
   border-radius: 50%;
+  &.landscape{
+    width:20px;
+    height:20px;
+  }
 }
-
+.color-box .landscape{
+    width:20px;
+    height:20px;
+  }
 .color-picker {
+  display: flex;
+  align-items: center;
   justify-content: center;
   display: grid;
   grid-template-columns: repeat(6, 16.6%);
@@ -708,7 +785,11 @@ nav{
     display: flex;
     width:60%;
     justify-content: space-around;
-    padding:10px 18px;
+    margin: 0rem;
+    max-width:400px;
+    margin-left:5px;
+    padding:0px;
+    // padding:10px 18px;
   }
 }
 .color-picker .currentColor{
@@ -735,9 +816,19 @@ nav{
   margin:0.5rem 1.5rem;
   background:#E6E6E6;
   &.landscape{
-    padding:10px;
-    margin: 1rem 0 1rem 1.5rem;
-    width: 40%;
+    padding:0px;
+    margin: 0;
+    & a{
+      height: 31px;
+      width: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    & .active{
+        width:40px;
+        border-radius:30px;
+      }
   }
 }
 .tool-list a {
@@ -763,28 +854,30 @@ nav{
 .tools-container{
   &.landscape{
     display: flex;
+    justify-content: center;
     position: fixed;
-    bottom: 0px;
+    bottom: 10px;
     z-index: 10;
     width: 100%;
   }
   position: fixed;
-  bottom: 0px;
+  bottom: 10px;
   z-index: 10;
   width: 100%;
 }
 .upload-button{
   display:block;
   margin:0 auto;
-  padding: 18px 28px;
+  padding: 14px 24px;
   font-size:18px;
   background-color:#CF2C2F;
   color:#fff;
   border-radius:43px;
+  border:0px;
 }
-.tool-list a:hover {
-  background-color: #6A6A6A;
-  color:#fff;
+.tool-list .active {
+  width:18%;
+  border-radius:30px ;
 }
 .canvas-container {
   position: relative;
@@ -814,7 +907,7 @@ nav{
 .conbon_h {
   width:100%;
   position: absolute;
-  top: 51%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3; /* 確保圖片在 Canvas 上方 */
@@ -830,9 +923,9 @@ nav{
   pointer-events: none;
 }
 .poster_h {
-  width:100%;
+  width:50%;
   position: absolute;
-  top: 51%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3; /* 確保圖片在 Canvas 上方 */
@@ -848,27 +941,27 @@ nav{
   pointer-events:none;
 }
 .poster_vs{
-  width:100%;
+  width:50%;
   position: absolute;
-  top: 51%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3; /* 確保圖片在 Canvas 上方 */
   pointer-events:none;
 }
 .conbon_hl{
-  width:100%;
+  width:110%;
   position: absolute;
-  top: 51%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3; /* 確保圖片在 Canvas 上方 */
   pointer-events:none;
 }
 .poster_hs{
-  width:100%;
+  width:75%;
   position: absolute;
-  top: 51%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3; /* 確保圖片在 Canvas 上方 */
@@ -877,7 +970,7 @@ nav{
 .conbon_u{
   width:100%;
   position: absolute;
-  top: 51%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3; /* 確保圖片在 Canvas 上方 */
@@ -898,31 +991,31 @@ nav{
   height: auto;
 }
 .stroke-container{
-  width: 24px;
+  width: 22px;
   position: absolute;
   transform: translate(-50%, -50%);
   top:50%;
   right: 3%;
-  z-index: 3;
+  z-index: 2;
   height:218px;
   &.landscape{
-    width:20px;
-    top:45%;
-    height:198px;
+    width:16px;
+    top:40%;
+    height:150px;
   }
 }
 .stroke-width{
   border-radius: 50%;
   width: 24px;
   height: 24px;
+  transform: translate(-50%, -50%);
   background-color:#5C5C5C;
   display: block;
   position: absolute;
-  right: 0%;
+  left:50%;
   top:50%;
   z-index: 3;
   &.landscape{
-    transform: translate(-50%, -50%);
     width:24px;
     height: 24px;
     top:50%;

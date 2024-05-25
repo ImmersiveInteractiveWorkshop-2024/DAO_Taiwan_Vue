@@ -22,17 +22,31 @@ export default {}
   height:100vh;
   height: 100dvh;
 }
+#app:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+  background-image: url('../assets/images/background_texture.png');
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  background-size: cover;
+}
 .start-button{
   text-decoration: none;
   display: block;
   font-size:25px;
   color: #CF2C2F;
-  border: 1px solid #CF2C2F;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
   background-color:#fff ;
   border-radius: 50px;
   padding:12px 40px;
   position: fixed;
-  bottom: 25px; /* 距離底部的距離 */
+  bottom: 15%; /* 距離底部的距離 */
   left: 50%; /* 距離左邊的距離 */
   transform: translateX(-50%); /* 將元素水平置中 */
 }

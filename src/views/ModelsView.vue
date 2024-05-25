@@ -104,9 +104,24 @@ nav {
   max-width: 450px;
   margin: 0 auto;
   padding:50px 0 0 0;
-  background-color: #fff;
   outline: 1px solid #cf2c2f;
   color: #CF2C2F;
+}
+
+#app:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  background-image: url('../assets/images/background_texture.png');
+  background-repeat: repeat;
+  background-position: 50% 0;
+  background-size: cover;
+  pointer-events:none;
 }
 .home-button {
   display: block;
