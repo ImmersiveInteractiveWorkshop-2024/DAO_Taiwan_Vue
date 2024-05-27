@@ -27,6 +27,7 @@ module.exports = {
   plugins: [
     'vue'
   ],
+  ignorePatterns: ['public/_headers'],
   rules: {
   }
 }
