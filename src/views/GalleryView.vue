@@ -1,4 +1,5 @@
 <template>
+  <div id="app">
   <h1 class="d-none">作品集頁面</h1>
   <img class="logo_sm " src="/src/assets/images/logo_small.png" alt="logo_sm">
   <ul class="image-list">
@@ -9,6 +10,7 @@
     <div class="footer-link">
       <router-link class="upload-button" to="/models">再玩一次</router-link>
     </div>
+  </div>
 </template>
 
 <script>
@@ -40,6 +42,18 @@ export default {
 </script>
 
 <style scoped>
+#app {
+  display: flex;
+  flex-direction: column;
+  max-width: 450px;
+  margin:0 auto;
+  outline: 1px solid #CF2C2F;
+  padding:0.3rem 0;
+  background-image: url('../assets/images/background_texture.png');
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  background-size: cover;
+}
 .image-list {
   list-style: none;
   padding: 10px;

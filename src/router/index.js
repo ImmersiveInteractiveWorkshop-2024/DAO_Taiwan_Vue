@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
+    redirect: '/home',
     name: '首頁',
     component: () => import('../views/FrontView.vue'),
     children: [

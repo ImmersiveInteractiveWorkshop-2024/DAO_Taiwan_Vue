@@ -677,24 +677,28 @@ body {
   padding:50px 0 5px 0;
   height: 100dvh;
   touch-action: none;
-}
-
-#app:before {
-  content: ' ';
-  display: block;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 1;
-  z-index: 3;
   background-image: url('../assets/images/background_texture.png');
-  background-repeat: repeat;
+  background-repeat: no-repeat;
   background-position: 50% 0;
   background-size: cover;
-  pointer-events:none;
 }
+
+// #app:before {
+//   content: ' ';
+//   display: block;
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+//   width: 100%;
+//   height: 100%;
+//   opacity: 1;
+//   z-index: 0;
+//   background-image: url('../assets/images/background_texture.png');
+//   background-repeat: repeat;
+//   background-position: 50% 0;
+//   background-size: cover;
+//   pointer-events:none;
+// }
 h2 {
   text-align: center;
   margin-bottom: 1rem;

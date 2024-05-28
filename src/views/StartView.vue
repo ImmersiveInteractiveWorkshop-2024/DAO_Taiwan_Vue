@@ -3,13 +3,13 @@
   <div id="app" class="position-relative">
     <nav class="my-0 d-flex justify-content-center align-items-center">
       <img
-        class="logo_sm"
+        class="logo_sm "
         src="/src/assets/images/logo_small.png"
         alt="logo_sm"
       />
     </nav>
     <img
-      class="start-signs ms-auto position-absolute end-0 z-0"
+      class="start-signs ms-auto position-absolute end-0 z-0 d-none"
       src="/src/assets/images/start_signs.png"
       alt="start_signs"
     />
@@ -32,7 +32,7 @@
       </div>
     </div>
     </div>
-    <div class="position-absolute bottom-0 z-0"><img class="w-100 building-img" src="/src/assets/images/start_building.png" alt="buildings"></div>
+    <div class="position-absolute building-img z-0"><img class="w-100 building-img" src="/src/assets/images/start_building.png" alt="buildings"></div>
   </div>
 </template>
 
@@ -69,21 +69,12 @@ nav {
   height: 100vh;
   height: 100dvh;
   padding:50px 0 5px 0;
-}
-#app:before {
-  content: ' ';
-  display: block;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.6;
   background-image: url('../assets/images/background_texture.png');
   background-repeat: no-repeat;
   background-position: 50% 0;
   background-size: cover;
 }
+
 .home-button {
   display: block;
   color: #cf2c2f;
@@ -106,9 +97,9 @@ nav {
 .start-signs{
   width:40%;
 }
-/* .building-img{
-  position:fixed;
-  bottom:0;
-  z-index: 1; */
-/* } */
+
+.building-img{
+  bottom:-6%;
+  width:115%;
+}
 </style>
