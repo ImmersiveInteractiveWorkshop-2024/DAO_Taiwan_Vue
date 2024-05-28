@@ -15,7 +15,7 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i
 export default defineConfig(({ mode }) => {
   loadEnv(mode)
   return ({
-    base: process.env.NODE_ENV === '/',
+    base: '/',
     plugins: [
       vue({
         template: {
