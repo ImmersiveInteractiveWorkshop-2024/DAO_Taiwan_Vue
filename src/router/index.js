@@ -38,11 +38,6 @@ const routes = [
         component: () => import('../views/GalleryView.vue')
       }
     ]
-  },
-  {
-    path: '/login',
-    name: '管理員登入',
-    component: () => import('../views/LoginView.vue')
   }
 ]
 
