@@ -23,8 +23,7 @@
       @touchstart="startTouching"
       @touchmove="dragging"
       @touchend="finishDragging"
-      :width="canvasWidth"
-      :height="canvasHeight"
+      :width="canvasWidth"      :height="canvasHeight"
       :style="{ left: canvasLeft ,top:canvasTop,clipPath:clipPath}"
     ></canvas>
     <div class="stroke-container" ref="strokeContainer" v-if="showColorPicker">
@@ -124,9 +123,9 @@ export default {
           width: 0.8,
           height: 0.8,
           left: '43.85%',
-          top: '49.5%',
+          top: '50%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_c-201802413-new_conbon_c.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/conbon_c-005459463-transparent_conbon_c.png',
           clipPath: 'circle(47% at 50% 50%)'
         },
         conbon_v: {
@@ -134,7 +133,7 @@ export default {
           height: 1,
           left: '50%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/conbon_v-072814348-masks_conbon_v.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/conbon_v-010002331-transparent_conbon_v.png',
           clipPath: 'inset(1.5% 34.5% 1.5% 34.5%)'
         },
         conbon_h: {
@@ -143,16 +142,16 @@ export default {
           left: '49.5%',
           top: '29%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240510/conbon_h-002815715-new_conbon_h.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/conbon_h-011609002-transparent_conbon_h.png',
           clipPath: 'inset(28.2% 2% 24.1% 2%)'
         },
         poster_vu: {
           width: 0.82,
           height: 0.82,
-          left: '44%',
+          left: '50%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_vu-080911471-masks_poster_vu.png',
-          clipPath: 'inset(6.5% 25% 1% 40.5%)'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/poster_vu-012827648-transparent_poster_vu.png',
+          clipPath: 'inset(3.4% 33% 1% 33%)'
         },
         poster_h: {
           width: 0.46,
@@ -160,8 +159,8 @@ export default {
           left: '50%',
           top: '35%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_h-081819072-models_poster_h.png',
-          clipPath: 'inset(27.5% 8.5% 24% 9%)'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/poster_h-013927685-transparent_poster_h.png',
+          clipPath: 'inset(23% 8.5% 24% 9%)'
         },
         poster_vs: {
           width: 0.46,
@@ -169,8 +168,8 @@ export default {
           left: '50%',
           top: '35%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/poster_vs-180239779-models_poster_vs.png',
-          clipPath: 'inset(24.2% 9% 20% 9%)'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/poster_vs-014855223-transparent_poster_vs.png',
+          clipPath: 'inset(20.5% 9% 20% 9%)'
         },
         conbon_hl: {
           width: 0.85,
@@ -178,7 +177,7 @@ export default {
           left: '46%',
           top: '39%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240510/conbon_hl-040108228-models_conbon_hl.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/conbon_hl-012122978-transparent_conbon_hl.png',
           clipPath: 'inset(41.9% 0% 41.1% 0%)'
         },
         poster_hs: {
@@ -187,17 +186,17 @@ export default {
           left: '50%',
           top: '34%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/poster_hs-181336719-models_poster_hs.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/poster_hs-020947879-models_conbon_hs.png',
           clipPath: 'inset(8% 1.2% 8% 1.2%)'
         },
         poster_v: {
-          width: 0.75,
-          height: 0.75,
+          width: 1,
+          height: 1,
           left: '50%',
-          top: '55%',
+          top: '50%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240508/poster_v-082633244-models_poster_v.png',
-          clipPath: 'inset(0% 18.5% 6% 19.5%)'
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/poster_v-015533816-models_poster_v.png',
+          clipPath: 'inset(14% 26% 11.5% 27%)'
         },
         conbon_u: {
           width: 0.7,
@@ -205,20 +204,24 @@ export default {
           left: '48%',
           top: '42%',
           orientation: 'portrait',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240509/conbon_u-181347300-models_conbon_u.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/conbon_u-021132235-models_conbon_u.png',
           clipPath: 'inset(4% 14% 5% 16.8%)'
         }
         // 添加更多的產品對應信息
       },
       orientation: 'portrait',
       buttonDisabled: false,
-      buttonText: '確認上傳' // 提交貼圖
+      buttonText: '確認上傳', // 提交貼圖,
+      drawingDone: false
     }
   },
   computed: {
 
     canvasWidthtest () {
-      return this.appWidth * 0.9
+      if (!this.doneDrawing) {
+        return this.appWidth * 0.9
+      }
+      return this.appWidth
     },
     canvasHeighttest () {
       return this.appWidth * 0.9
@@ -326,8 +329,8 @@ export default {
       if (overlay) {
         overlay.parentNode.removeChild(overlay)
         this.ctx.strokeStyle = this.colors[0]
-        this.ctx.fillStyle = '#ffffff'
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        // this.ctx.fillStyle = '#ffffff'
+        // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       }
     },
     updateOverlayImgSrc () {
@@ -543,12 +546,13 @@ export default {
       mediaQueryList.removeEventListener('change', () => this.checkOrientation())
       this.canvasEnabled = false
       this.showColorPicker = false
+      this.drawingDone = true
     },
     startDragging (event) {
       this.strokeDragging = true
     },
 
-    // 拖动事件处理函数
+    // 筆畫事件處理
     handleDragging (event) {
       if (this.strokeDragging) {
         const containerRect = this.$refs.strokeContainer.getBoundingClientRect()
@@ -587,7 +591,6 @@ export default {
         console.log(this.currentLineWidth)
       }
     },
-    // 结束拖动事件处理函数
     stopDragging () {
       this.strokeDragging = false
     },
@@ -734,19 +737,22 @@ nav{
   width: 35px;
   height: 35px;
   color: #CF2C2F;
-  border: 1px solid #CF2C2F;
+  background-color:white;
   border-radius: 50%;
   margin-right: auto;
   justify-content: center;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
 }
 
 .done-button{
   color:#CF2C2F;
   font-size: 14px;
   padding:8px 16px;
-  border:1px solid #CF2C2F;
+  background-color:white;
+  // border:1px solid #CF2C2F;
   border-radius:30px;
   margin-left: auto;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
 }
 .landscape-upload-button{
   z-index:10;
