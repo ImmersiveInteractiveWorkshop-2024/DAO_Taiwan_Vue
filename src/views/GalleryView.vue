@@ -50,7 +50,7 @@ export default {
   outline: 1px solid #CF2C2F;
   padding:0.3rem 0;
   background-image: url('../assets/images/background_texture.png');
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-position: 50% 0;
   background-size: cover;
 }
@@ -89,12 +89,12 @@ a{
   bottom: 25px; /* 距離底部的距離 */
   left: 50%; /* 距離左邊的距離 */
   transform: translateX(-50%); /* 將元素水平置中 */
-  color:#CF2C2F;
   font-size: 18px;
   padding:14px 24px;
-  border:1px solid #CF2C2F;
   border-radius:30px;
   background-color:#fff;
   margin-left: auto;
+  color:#E13237;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
 }
 </style>

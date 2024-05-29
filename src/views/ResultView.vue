@@ -1,18 +1,31 @@
 <template>
     <h1 class="d-none">結果頁面</h1>
-    <div id="app" class="position-relative" ref="appContainer">
+    <div id="app" class="position-relative app" ref="appContainer">
       <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
-      <img class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_white.png" alt="logo_white">
+      <img v-if="!lightMode" class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_white.png" alt="logo_white">
+      <img v-if="lightMode" class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_small.png" alt="logo_red">
       <div class="w-25 d-flex d-none"><router-link class="done-button" to="/home">家</router-link></div>
     </nav>
         <img v-if="this.resultData"
           :src=this.resultData.url
-          class="result-image"
+          class="result-image position-relative"
           alt="result-image"
         />
-
+        <div class="position-relative" >
         <img  class="streetlight" src="/src/assets/images/streetlight.png" alt="streetlight">
         <img src="/src/assets/images/toggle-light.png" alt="toggle-light" class="streetlight toggle-light">
+        <!-- <img v-if="true"
+          src='/src/assets/images/default_image.png'
+          class="result-image position-relative"
+          alt="result-image"
+        /> -->
+        <img v-if="this.resultData"
+          :src=this.resultData.url
+          class="result-image position-relative"
+          alt="result-image"
+        />
+        <div class="overlay">點選按鈕照亮您的招牌<br>試著在場景中找到他吧！！</div>
+        </div>
         <!-- Toggle Switch -->
         <div class="d-flex flex-column justify-content-between h-100 pb-5 pt-2 result-content">
             <div class="toggle-switch mx-auto" @click="toggleDarkMode">
@@ -40,16 +53,22 @@ export default {
       resultImageGet: false,
       resultData: null,
       textureCookie: null,
-      textureId: null
+      textureId: null,
+      lightMode: false
     }
   },
   methods: {
     toggleDarkMode () {
+      const toggleApp = document.querySelector('.app')
+      toggleApp.classList.toggle('active')
+      this.lightMode = !this.lightMode
       const toggleSwitch = document.querySelector('.toggle-switch')
       toggleSwitch.classList.toggle('active')
       const toggleLight = document.querySelector('.toggle-light')
       toggleLight.classList.toggle('active')
       console.log(this.textureId)
+      const toggleOverlay = document.querySelector('.overlay')
+      toggleOverlay.classList.toggle('active')
       if (this.resultImageGet != null || this.textureId != null) {
         if (toggleSwitch.classList.contains('active')) {
           this.lightControllById(this.textureId, this.resultData.category, 'light-on')
@@ -144,7 +163,6 @@ export default {
         this.textureId = this.textureCookie._id
         console.log(this.textureId)
         this.fetchResultImage(this.textureId)
-        // this.fetchResultImage('66348ee91976ae8cd933fdc4')
         break
       }
     }
@@ -171,9 +189,11 @@ a{
   padding:50px 0 5px 0;
   height:100vh;
   height: 100dvh;
-}
-.result-content{
-    background-color:#242424;
+  &.active{
+    background-image: url('/src/assets/images/background_texture.png');
+    background-repeat: repeat;
+    background-size: cover;
+  }
 }
 h2 {
   text-align: center;
@@ -201,7 +221,27 @@ nav{
   margin-right: auto;
   justify-content: center;
 }
-
+.overlay {
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 2;
+  margin: auto;
+  width: 60%;
+    height: 63%;
+    position: absolute;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #121212;
+    text-align: center;
+    border-radius: 33px;
+    &.active{
+       display:none;
+    }
+}
 .done-button{
   color:#CF2C2F;
   font-size: 14px;
@@ -220,10 +260,18 @@ nav{
   margin:0 auto;
   padding: 18px 28px;
   font-size:18px;
-  background-color:#242424;
-  color:#fff;
+  background-color:#fff;
+  color:black;
   border:solid 1px #fff;
   border-radius:43px;
+}
+
+.active{
+  .upload-button{
+    background-color:#fff;
+    color:#E13237;
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
+  }
 }
 .result-image {
   display: block;
@@ -234,6 +282,7 @@ nav{
   margin-top:35%;
 }
 .result-text{
+  opacity: 0;
   color:#fff;
   font-size: 20px;
   letter-spacing: 0.3rem;
@@ -243,7 +292,7 @@ nav{
   display: block;
   width:100%;
   position: absolute;
-  top:7%;
+  top:0%;
 }
 .toggle-light{
     display: none;
@@ -252,6 +301,7 @@ nav{
     }
 }
 .toggle-switch {
+  margin: 20px;
   width: 50px;
   height: 25px;
   position: relative;
@@ -283,4 +333,5 @@ nav{
 .toggle-switch.active .toggle-handle {
     transform: translateX(25px);
 }
+
 </style>

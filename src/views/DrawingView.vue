@@ -6,8 +6,13 @@
       <img class="logo_sm d-none " src="/src/assets/images/logo_small.png" alt="logo_sm">
       <div class="w-25 d-flex"><a class="done-button" href="#" @click.prevent="doneDrawing">完成</a></div>
     </nav>
-      <div class="landscape-upload-button d-flex justify-content-center mb-5 pb-5 position-fixed" v-if="!showColorPicker && !isLandscape">
-        <button :disabled="buttonDisabled" @click="uploadImage" class="upload-button ">{{ buttonText }}</button>
+    <img class="upload_logo_land" v-if="!showColorPicker && isLandscape" src="/src/assets/images/logo_small.png" alt="">
+    <img class="upload_logo_ver" v-if="!showColorPicker && !isLandscape" src="/src/assets/images/upload_logo_ver.png" alt="">
+      <div class="landscape-upload-button d-flex justify-content-center mb-5  position-fixed" v-if="!showColorPicker && !isLandscape">
+        <button :disabled="buttonDisabled" @click="uploadImage" class="upload-button " v-if="!showColorPicker && !isLandscape">{{ buttonText }}</button>
+      </div>
+      <div class="d-flex justify-content-center mb-7  upload-button-container" v-if="!showColorPicker && isLandscape">
+        <button :disabled="buttonDisabled" @click="uploadImage" class="upload-button " v-if="!showColorPicker && isLandscape">{{ buttonText }}</button>
       </div>
       <div class="canvas-container">
         <img
@@ -23,7 +28,8 @@
       @touchstart="startTouching"
       @touchmove="dragging"
       @touchend="finishDragging"
-      :width="canvasWidth"      :height="canvasHeight"
+      :width="canvasWidth"
+      :height="canvasHeight"
       :style="{ left: canvasLeft ,top:canvasTop,clipPath:clipPath}"
     ></canvas>
     <div class="stroke-container" ref="strokeContainer" v-if="showColorPicker">
@@ -41,6 +47,7 @@
     />
   </div>
 </div>
+
     <div class="tools-container">
       <div class="tool-list d-flex" v-if="showColorPicker">
         <a class="painting-button" @click.prevent="paintingSelect(); toggleActive(0)"  :class="{ 'active': activeButton == 0}"><i class="fas fa-paint-brush"></i></a>
@@ -59,9 +66,6 @@
           :style="{  backgroundColor: color, outlineColor: color}"
           @click="changeColor(color); toggleActive(0)"
           :class="{ 'currentColor': color === this.currentColor }"></div></div>
-      </div>
-      <div class="d-flex justify-content-center mb-5 pb-5" v-if="!showColorPicker && isLandscape">
-        <a class="upload-button " href="#" @click.prevent="uploadImage">確認上傳</a>
       </div>
     </div>
     </div>
@@ -107,7 +111,7 @@ export default {
       lastY: 0,
       showColorPicker: true,
       canvasEnabled: true,
-      isLandscape: false,
+      isLandscape: null,
       rotateButton: null,
       history: [],
       redoHistory: [],
@@ -246,7 +250,6 @@ export default {
   methods: {
     fullScreen () {
       this.enterFullscreen()
-      this.hideOverlay()
     },
     // 根據 selectedProduct 返回對應的 overlay-img 圖片路徑
     overlayImgSrc (product) {
@@ -265,25 +268,23 @@ export default {
       this.currentColor = '#FFF'
     },
     checkOrientation () {
-    // 获取设备当前的方向
       const mediaQueryList = window.matchMedia('(orientation: landscape)')
       const isDeviceLandscape = mediaQueryList.matches
+      this.isLandscape = mediaQueryList.matches
       if (this.selectedProduct) {
         console.log('方向確認', this.selectedProduct)
         const productOrientation = this.productInfo[this.selectedProduct].orientation
 
-        if ((productOrientation === 'landscape' && !isDeviceLandscape) ||
-          (productOrientation === 'portrait' && isDeviceLandscape)) {
-          if (productOrientation === 'landscape') {
-            this.message = '請旋轉手機至橫向'
-            this.showOverlay('請旋轉手機至橫向')
-          } else {
-            this.message = '請旋轉手機至直向'
-            this.showOverlay('請旋轉手機至直向')
-          }
+        if (productOrientation === 'landscape' && !isDeviceLandscape) {
+          this.message = '請旋轉手機至橫向'
+          this.showOverlay('請旋轉手機至橫向')
+        } else if (productOrientation === 'portrait' && isDeviceLandscape) {
+          this.message = '請旋轉手機至直向'
+          this.showOverlay('請旋轉手機至直向')
         } else {
           if (productOrientation === 'landscape' && this.showColorPicker !== false) {
             // app/nav最大寬度設置100%
+
             document.querySelector('.app').style.maxWidth = '100%'
             document.querySelector('.nav').style.maxWidth = '100%'
             document.querySelector('.canvas-container').style.paddingTop = '35%'
@@ -293,6 +294,7 @@ export default {
             document.querySelector('.stroke-container').classList.add('landscape')
             document.querySelector('.stroke-width').classList.add('landscape')
             document.querySelector('.color-box').classList.add('landscape')
+            this.hideOverlay()
           }
           this.hideOverlay()
           this.message = ''
@@ -303,6 +305,7 @@ export default {
     // 創建遮罩元素
       const app = document.querySelector('.app')
       if (app) {
+        document.querySelector('.app').style.pointerEvent = 'none'
         const overlay = document.createElement('div')
         overlay.id = 'overlay' // 加上 id 屬性
         overlay.style.position = 'fixed'
@@ -328,9 +331,13 @@ export default {
       const overlay = document.getElementById('overlay')
       if (overlay) {
         overlay.parentNode.removeChild(overlay)
+        const app = document.querySelector('.app')
         this.ctx.strokeStyle = this.colors[0]
-        // this.ctx.fillStyle = '#ffffff'
-        // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        this.ctx.fillStyle = '#ffffff'
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        if (app) {
+          app.style.pointerEvents = 'auto' // 恢復 pointerEvents
+        }
       }
     },
     updateOverlayImgSrc () {
@@ -670,14 +677,12 @@ body {
 
 #app {
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
   justify-content: space-between;
   max-width: 450px;
   margin:0 auto;
   background-color: #fff;
   outline: 1px solid #CF2C2F;
-  padding:50px 0 5px 0;
+  padding:30px 0 5px 0;
   height: 100dvh;
   touch-action: none;
   background-image: url('../assets/images/background_texture.png');
@@ -756,8 +761,9 @@ nav{
 }
 .landscape-upload-button{
   z-index:10;
-  top:20px;
-  right:20px;
+  top:80%;
+  right:50%;
+  transform: translate(50%, 50%);
 }
 .logo_sm{
   width:40%;
@@ -876,14 +882,14 @@ nav{
   width: 100%;
 }
 .upload-button{
-  display:block;
-  margin:0 auto;
-  padding: 14px 24px;
-  font-size:18px;
-  background-color:#CF2C2F;
-  color:#fff;
-  border-radius:43px;
-  border:0px;
+  margin-left: auto;
+    display: block;
+    padding: 14px 24px;
+    font-size: 18px;
+    background-color: #CF2C2F;
+    color: #fff;
+    border-radius: 43px;
+    border: 0px;
 }
 .tool-list .active {
   width:18%;
@@ -977,6 +983,9 @@ nav{
   z-index: 3; /* 確保圖片在 Canvas 上方 */
   pointer-events:none;
 }
+#overlay{
+  pointer-events: none;
+}
 .conbon_u{
   width:100%;
   position: absolute;
@@ -1031,5 +1040,24 @@ nav{
     top:50%;
     left:50%;
   }
+}
+.upload_logo_ver{
+  display: block;
+  width: 70%;
+  margin:10px auto;
+}
+.upload_logo_land{
+  display: block;
+  width: 40%;
+  margin-right:auto;
+  margin-top: 10px;
+  margin-bottom:50px;
+  margin-left:30px;
+}
+
+.upload-button-container{
+  position:fixed;
+  top:7%;
+  right:5%;
 }
 </style>

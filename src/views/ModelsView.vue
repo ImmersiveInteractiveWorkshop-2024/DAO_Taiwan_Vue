@@ -94,7 +94,7 @@ export default {
       this.$router.push('/drawing')
     },
     handleScroll () {
-      if (window.scrollY > 500) { // 設定滾動位置的閾值
+      if (window.scrollY > 500 && this.showMessageTop === false) { // 設定滾動位置的閾值
         this.showMessageMiddle = false
         this.showMessageBottom = true
       }
@@ -170,7 +170,7 @@ nav {
   outline: 1px solid #cf2c2f;
   color: #CF2C2F;
   background-image: url('../assets/images/background_texture.png');
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-position: 50% 0;
   background-size: cover;
 }
