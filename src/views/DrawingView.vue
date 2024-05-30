@@ -295,8 +295,12 @@ export default {
             document.querySelector('.stroke-width').classList.add('landscape')
             document.querySelector('.color-box').classList.add('landscape')
             this.hideOverlay()
+            this.ctx.fillStyle = '#ffffff'
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
           }
           this.hideOverlay()
+          this.ctx.fillStyle = '#ffffff'
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
           this.message = ''
         }
       }
@@ -322,9 +326,17 @@ export default {
         overlay.style.zIndex = '10'
         overlay.innerHTML = message
         overlay.touvhAction = 'none'
+        overlay.style.flexDirection = 'column-reverse'
 
         // 將遮罩元素加入到 body 中
         document.querySelector('.app').appendChild(overlay)
+
+        const rotate = document.createElement('img')
+        rotate.id = 'rotate'
+        rotate.src = 'https://storage.googleapis.com/texture-image/20240530/conbon_c-002522577-rotate.png'
+        document.getElementById('overlay').appendChild(rotate)
+        rotate.style.width = '90px'
+        rotate.style.margin = '10px'
       }
     },
     hideOverlay () {
@@ -338,6 +350,8 @@ export default {
         if (app) {
           app.style.pointerEvents = 'auto' // 恢復 pointerEvents
         }
+        this.ctx.fillStyle = '#ffffff'
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       }
     },
     updateOverlayImgSrc () {
@@ -535,7 +549,7 @@ export default {
           .then((data) => {
             console.log(data)
             document.cookie = `textureCookie=${JSON.stringify(data.data)}; expires=${new Date(Date.now() + 3600 * 1000).toUTCString()}; path=/`
-            alert(JSON.stringify(data.message))
+            // alert(JSON.stringify(data.message))
             this.buttonText = '確認上傳'
             this.buttonDisabled = false
             this.$router.push('/result')
@@ -630,7 +644,7 @@ export default {
       this.selectedProduct = selectedProduct
       this.overlayImgSrc(this.selectedProduct)
     }
-    this.checkOrientation()
+    // this.checkOrientation()
     document.addEventListener('mousemove', this.handleDragging)
     document.addEventListener('mouseup', this.stopDragging)
     document.addEventListener('touchstart', this.startStrokeDragging)
@@ -985,6 +999,13 @@ nav{
 }
 #overlay{
   pointer-events: none;
+  display: flex;
+  flex-direction: column-reverse;
+  img{
+    width: 10%;
+    margin: 10px;
+  }
+
 }
 .conbon_u{
   width:100%;

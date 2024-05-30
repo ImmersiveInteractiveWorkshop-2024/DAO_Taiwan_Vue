@@ -2,15 +2,15 @@
     <h1 class="d-none">結果頁面</h1>
     <div id="app" class="position-relative app" ref="appContainer">
       <nav class="my-0 mx-auto d-flex justify-content-between align-items-center ">
-      <img v-if="!lightMode" class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_white.png" alt="logo_white">
-      <img v-if="lightMode" class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_small.png" alt="logo_red">
+      <img  class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_white.png" alt="logo_white">
+      <img v-if="false" class="logo_white mx-auto pt-3 " src="/src/assets/images/logo_small.png" alt="logo_red">
       <div class="w-25 d-flex d-none"><router-link class="done-button" to="/home">家</router-link></div>
     </nav>
-        <img v-if="this.resultData"
+        <!-- <img v-if="this.resultData"
           :src=this.resultData.url
           class="result-image position-relative"
           alt="result-image"
-        />
+        /> -->
         <div class="position-relative" >
         <img  class="streetlight" src="/src/assets/images/streetlight.png" alt="streetlight">
         <img src="/src/assets/images/toggle-light.png" alt="toggle-light" class="streetlight toggle-light">
@@ -31,10 +31,10 @@
             <div class="toggle-switch mx-auto" @click="toggleDarkMode">
             <div class="toggle-handle"></div>
             </div>
-            <p class="result-text pt-3">點選按鈕照亮您的招牌<br>試著在場景中找到他吧！！</p>
-            <div class="d-flex justify-content-between" >
-                <a class="upload-button" href="#" @click.prevent="downloadImage">下載</a>
-                <router-link class="upload-button" to="/gallery">大家ㄉ庫</router-link>
+            <p class="result-text pt-3 d-none">點選按鈕照亮您的招牌<br>試著在場景中找到他吧！！</p>
+            <div class="d-flex justify-content-between buttons" >
+                <a class="upload-button" href="#" @click.prevent="downloadImage"> <img  src="/src/assets/images/cloud_gray.png" alt=""><img v-if="false" src="/src/assets/images/cloud_red.png" alt=""> 下載街景</a>
+                <router-link class="upload-button" to="/gallery"><img  src="/src/assets/images/picture_gray.png" alt=""><img v-if="false" src="/src/assets/images/picture_red.png" alt=""> 大家ㄉ庫</router-link>
             </div>
         </div>
     </div>
@@ -54,7 +54,9 @@ export default {
       resultData: null,
       textureCookie: null,
       textureId: null,
-      lightMode: false
+      lightMode: false,
+      message: null,
+      intro: true
     }
   },
   methods: {
@@ -66,9 +68,12 @@ export default {
       toggleSwitch.classList.toggle('active')
       const toggleLight = document.querySelector('.toggle-light')
       toggleLight.classList.toggle('active')
+      if (this.intro) {
+        const toggleOverlay = document.querySelector('.overlay')
+        toggleOverlay.classList.toggle('active')
+        this.intro = false
+      }
       console.log(this.textureId)
-      const toggleOverlay = document.querySelector('.overlay')
-      toggleOverlay.classList.toggle('active')
       if (this.resultImageGet != null || this.textureId != null) {
         if (toggleSwitch.classList.contains('active')) {
           this.lightControllById(this.textureId, this.resultData.category, 'light-on')
@@ -112,7 +117,6 @@ export default {
         link.href = this.resultData.url
         console.log(link.href)
         link.download = 'DAO-Taiwan-result-image.png'
-
         fetch(link.href, {
           mode: 'cors'
         })
@@ -189,11 +193,11 @@ a{
   padding:50px 0 5px 0;
   height:100vh;
   height: 100dvh;
-  &.active{
-    background-image: url('/src/assets/images/background_texture.png');
-    background-repeat: repeat;
-    background-size: cover;
-  }
+  // &.active{
+  //   background-image: url('/src/assets/images/background_texture.png');
+  //   background-repeat: repeat;
+  //   background-size: cover;
+  // }
 }
 h2 {
   text-align: center;
@@ -228,10 +232,10 @@ nav{
   align-items: center;
   line-height: 2;
   margin: auto;
-  width: 60%;
-    height: 63%;
-    position: absolute;
-    top: 37%;
+  width: 80%;
+  height: 69.5%;
+  position: absolute;
+    top: 30.5%;
     left: 50%;
     transform: translate(-50%, 0);
     background-color: rgba(255, 255, 255, 0.8);
@@ -266,16 +270,16 @@ nav{
   border-radius:43px;
 }
 
-.active{
-  .upload-button{
-    background-color:#fff;
-    color:#E13237;
-    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
-  }
-}
+// .active{
+//   .upload-button{
+//     background-color:#fff;
+//     color:#E13237;
+//     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.146);
+//   }
+// }
 .result-image {
   display: block;
-  width:60%;
+  width:80%;
   height:auto;
   margin:0 auto;
   border-radius:33px;
@@ -332,6 +336,11 @@ nav{
 
 .toggle-switch.active .toggle-handle {
     transform: translateX(25px);
+}
+.buttons {
+    img{
+      width:24px;
+    }
 }
 
 </style>

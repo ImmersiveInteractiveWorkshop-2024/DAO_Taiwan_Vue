@@ -4,7 +4,7 @@
     <div id="overlay" v-if="showOverlay">
       <img id="message-top" v-if="showMessageTop" @click="showMessageTop = false;showMessageMiddle = true;"  src="/src/assets/images/message_top.png" alt="">
       <img id="message-middle" v-if="showMessageMiddle" @click="showMessageMiddle = false;showMessageBottom = true;" src="/src/assets/images/message_middle.png">
-      <img id="message-bottom" v-if="showMessageBottom" @click="showMessageBottom = false;showOverlay = false"  src="/src/assets/images/message_bottom.png" alt="">
+      <img id="message-bottom" v-if="showMessageBottom" @click="closeOverlay"  src="/src/assets/images/message_bottom.png" alt="">
     </div>
     <nav class="my-0 d-flex justify-content-between align-items-center ">
       <div class="w-25"><router-link class="button-circle" to="/start"><ion-icon name="chevron-back-outline"></ion-icon></router-link></div>
@@ -80,7 +80,7 @@ export default {
         { id: 10, name: 'conbon-u' }
       ],
       message: '點選進行繪製',
-      showOverlay: true,
+      showOverlay: false,
       showMessageTop: true,
       showMessageMiddle: false,
       showMessageBottom: false
@@ -98,10 +98,18 @@ export default {
         this.showMessageMiddle = false
         this.showMessageBottom = true
       }
+    },
+    closeOverlay () {
+      this.showOverlay = false
+      localStorage.setItem('overlayShown', 'true')
     }
   },
   mounted () {
     window.addEventListener('scroll', this.handleScroll)
+    const overlayShown = localStorage.getItem('overlayShown')
+    if (!overlayShown) {
+      this.showOverlay = true
+    }
   },
   beforeUnmount () {
     window.removeEventListener('scroll', this.handleScroll)
