@@ -1,10 +1,10 @@
 <template>
   <h1 class="d-none">模型選擇頁面</h1>
   <div id="app" class="app position-relative">
-    <div id="overlay" v-if="showOverlay">
-      <img id="message-top" v-if="showMessageTop" @click="showMessageTop = false;showMessageMiddle = true;"  src="/src/assets/images/message_top.png" alt="">
-      <img id="message-middle" v-if="showMessageMiddle" @click="showMessageMiddle = false;showMessageBottom = true;" src="/src/assets/images/message_middle.png">
-      <img id="message-bottom" v-if="showMessageBottom" @click="closeOverlay"  src="/src/assets/images/message_bottom.png" alt="">
+    <div id="overlay" v-if="showOverlay" @click="closeOverlay">
+      <img id="message-top" v-if="showOverlay"   src="/src/assets/images/message_top.png" alt="">
+      <img id="message-middle" v-if="showOverlay"  src="/src/assets/images/message_middle.png">
+      <img id="message-bottom" v-if="showOverlay"  src="/src/assets/images/message_bottom.png" alt="">
     </div>
     <nav class="my-0 d-flex justify-content-between align-items-center ">
       <div class="w-25"><router-link class="button-circle" to="/start"><ion-icon name="chevron-back-outline"></ion-icon></router-link></div>

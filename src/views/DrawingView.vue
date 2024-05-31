@@ -56,7 +56,7 @@
         <a class="fill-button" @click.prevent="fillCanvas(); toggleActive(3)" :class="{ 'active': activeButton == 3 }"><img src="/src/assets/images/fill-bucket.png" alt=""></a>
         <a class="eraser-button"  @click.prevent="toggleActive(4); white()" :class="{ 'active': activeButton == 4 }"><i class="fas fa-eraser"></i></a>
         <a class="clear-button" @click.prevent="clearCanvas(); toggleActive(5)" :class="{ 'active': activeButton == 5 }"><i class="fas fa-trash"></i></a>
-        <a class="save-button d-none" @click.prevent="saveCanvas"><i class="fas fa-save"></i></a>
+        <a class="save-button" @click.prevent="saveCanvas"><i class="fas fa-save"></i></a>
       </div>
       <div class="color-picker"  v-if="showColorPicker">
         <div
@@ -121,6 +121,7 @@ export default {
       offsetX: 0,
       offsetY: 0,
       currentLineWidth: 15,
+      fillWhite: false,
       // 定義不同 selectedProduct 對應的 canvas 寬高和 overlay-img 圖片路徑
       productInfo: {
         conbon_c: {
@@ -146,7 +147,7 @@ export default {
           left: '49.5%',
           top: '29%',
           orientation: 'landscape',
-          overlayImg: 'https://storage.googleapis.com/texture-image/20240529/conbon_h-011609002-transparent_conbon_h.png',
+          overlayImg: 'https://storage.googleapis.com/texture-image/20240530/conbon_hl-235857509-Group%20258.png',
           clipPath: 'inset(28.2% 2% 24.1% 2%)'
         },
         poster_vu: {
@@ -295,12 +296,18 @@ export default {
             document.querySelector('.stroke-width').classList.add('landscape')
             document.querySelector('.color-box').classList.add('landscape')
             this.hideOverlay()
+            if (!this.fillWhite) {
+              this.ctx.fillStyle = '#ffffff'
+              this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+              this.fillWhite = true
+            }
+          }
+          if (!this.fillWhite) {
             this.ctx.fillStyle = '#ffffff'
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+            this.fillWhite = true
           }
           this.hideOverlay()
-          this.ctx.fillStyle = '#ffffff'
-          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
           this.message = ''
         }
       }
@@ -325,7 +332,7 @@ export default {
         overlay.style.fontSize = '24px'
         overlay.style.zIndex = '10'
         overlay.innerHTML = message
-        overlay.touvhAction = 'none'
+        overlay.touchAction = 'none'
         overlay.style.flexDirection = 'column-reverse'
 
         // 將遮罩元素加入到 body 中
@@ -364,7 +371,6 @@ export default {
     },
     toggleActive (buttonIndex) {
       // 當按鍵被點擊時，將 activeButtonIndex 設置為被點擊的按鍵索引
-      console.log('yess')
       this.activeButton = buttonIndex
       console.log(this.activeButton)
       // 將除了被點擊的按鍵之外的其他按鍵的 active 狀態設置為 false
@@ -512,6 +518,11 @@ export default {
       newCanvas.width = targetWidth
       newCanvas.height = targetHeight
 
+      // 填滿白色背景
+      newContext.fillStyle = 'white'
+      newContext.fillRect(0, 0, targetWidth, targetHeight)
+      // 設置合成操作為 source-over，這是默認值
+      newContext.globalCompositeOperation = 'source-over'
       // 繪製原始圖片到新的 canvas
       newContext.drawImage(this.canvas, 0, 0, targetWidth, targetHeight)
 
@@ -532,8 +543,13 @@ export default {
       newCanvas.width = 1024
       newCanvas.height = 1024
 
-      // 繪製當前畫布到新畫布上
-      newContext.drawImage(this.canvas, 0, 0, 1024, 1024)
+      // 填滿白色背景
+      newContext.fillStyle = 'white'
+      newContext.fillRect(0, 0, newCanvas.width, newCanvas.height)
+      // 設置合成操作為 source-over，這是默認值
+      newContext.globalCompositeOperation = 'source-over'
+      // 繪製原始圖片到新的 canvas
+      newContext.drawImage(this.canvas, 0, 0, newCanvas.width, newCanvas.height)
 
       // Canvas 轉為 Blob
       newCanvas.toBlob((blob) => {
@@ -627,6 +643,7 @@ export default {
     }
   },
   mounted () {
+    this.fillWhite = false
     this.canvas = document.getElementById('canvas')
     this.ctx = this.canvas.getContext('2d')
     this.updateAppWidth() // 初始化更新 app 寬度
