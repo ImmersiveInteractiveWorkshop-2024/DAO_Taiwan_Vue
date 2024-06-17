@@ -42,7 +42,7 @@
 
 <script>
 import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js'
-const socket = io('https://daotaiwanapi.onrender.com', {
+const socket = io(`${import.meta.env.VITE_RENDER_URL}`, {
   withCredentials: false
 })
 
@@ -90,7 +90,7 @@ export default {
       }
     },
     fetchResultImage (id) {
-      fetch(`https://daotaiwanapi.onrender.com/results/${id}`, {
+      fetch(`${import.meta.env.VITE_RENDER_URL}/results/${id}`, {
         method: 'GET'
       })
         .then((response) => {

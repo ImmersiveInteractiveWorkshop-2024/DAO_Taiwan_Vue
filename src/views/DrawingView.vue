@@ -76,7 +76,7 @@
 import { saveAs } from 'file-saver'
 // 創建Socket.io客戶端連接
 import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js'
-const socket = io('https://daotaiwanapi.onrender.com', {
+const socket = io(`${import.meta.env.VITE_RENDER_URL}`, {
   withCredentials: false
 })
 // 監聽後端發送的 message 訊號
@@ -557,7 +557,7 @@ export default {
         formData.append('image', blob, 'canvas_image.png')
         formData.append('type', this.selectedProduct)
         // 使用 fetch 函数上传 FormData 到 API https://daotaiwanapi.onrender.com/upload
-        fetch('https://daotaiwanapi.onrender.com/upload', {
+        fetch(`${import.meta.env.VITE_RENDER_URL}/upload`, {
           method: 'POST',
           body: formData
         })

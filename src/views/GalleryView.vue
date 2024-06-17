@@ -29,9 +29,10 @@ export default {
     }
   },
   mounted () {
-    axios.get('https://daotaiwanapi.onrender.com/results')
+    axios.get(`${import.meta.env.VITE_RENDER_URL}/results`)
       .then(response => {
         // 成功獲取數據後，將數據存儲到 items 中
+        console.log(`${import.meta.env.VITE_RENDER_URL}/results`)
         this.items = response.data.data
       })
       .catch(error => {

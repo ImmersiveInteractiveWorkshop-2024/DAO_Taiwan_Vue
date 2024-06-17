@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-        // https://github.com/rollup/rollup/blob/master/src/utils/sanitizeFileName.ts
+        // https://githubnp.com/rollup/rollup/blob/master/src/utils/sanitizeFileName.ts
           sanitizeFileName (name) {
             const match = DRIVE_LETTER_REGEX.exec(name)
             const driveLetter = match ? match[0] : ''
